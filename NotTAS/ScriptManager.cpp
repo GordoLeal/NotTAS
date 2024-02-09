@@ -1,34 +1,30 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <functional>
+#include <optional>
 //#include <string>
 //#include <vector>
 #include "ScriptManager.h"
 
 using namespace std;
 
-
-//struct FrameCall {
-//	int frame = 0;
-//	string call;
-//	vector<string> args;
-//};
-vector<FrameCall> frameCalls;
-
-//LoadScripts from file
-//Format is: <TIMEFRAME> function (ARGS) \n
-void ScriptManager::LoadScript(const char* filename) {
+// LoadScripts from file.
+// The line should be: TIMEFRAME function (args1, args2 ..., args5) \n
+// Max number of args is 5.
+vector<FrameCall> ScriptManager::LoadScript(const char* filename) {
 
 	fstream fileStream(filename);
 	string lineText;
 	unsigned int rLine = 0;
+	vector<FrameCall> outFrameCalls;
 
-	//Probably there's a better way of doing this, but i don't care at the moment. - Gordo
+	//Probably  there is a better way of doing this, but i don't care at the moment. - Gordo
 
 	while (getline(fileStream, lineText))
 	{
 		rLine++;
 		FrameCall frame;
-		// =-=-= Frame number
+		// =-=-=-=-=-=-=-=--=-=--= Frame number =--=-=-=--=-=-=--=-=--=
 		size_t posStartBracks = lineText.find('<');
 		size_t posEndBracks = lineText.find('>');
 
@@ -41,18 +37,18 @@ void ScriptManager::LoadScript(const char* filename) {
 		string subtLine = lineText;
 		string a = subtLine.substr(posStartBracks + 1, (posEndBracks - posStartBracks) - 1);
 		try {
-			 //frame.frame = stoul(subtLine.substr(posStartBracks + 1, (posEndBracks - posStartBracks) - 1));
-			 frame.frame = stoull(a);
+			//frame.frame = stoul(subtLine.substr(posStartBracks + 1, (posEndBracks - posStartBracks) - 1));
+			frame.frame = stoull(a);
 		}
 		catch (out_of_range e) { //invalid int value
 			//TODO: better way to show errors
-			cout << ">> ERROR invalid frame number at: " << rLine << endl; 
+			cout << ">> ERROR invalid frame number at: " << rLine << endl;
 			cout << a << endl;
 		}
-		
-		lineText.erase(lineText.begin(),lineText.begin() + posEndBracks +1);
-		cout << "line: " << lineText << endl;
-		// =-=-= Func
+
+		lineText.erase(lineText.begin(), lineText.begin() + posEndBracks + 1);
+
+		// =-=-=-=-=-=-=--=-=-=--=- Function =-=--==--=-=-=--=-=-=-=--=-=--==--=
 		cout << "reading line: " << rLine << endl;
 		int stopedAt = 0;
 
@@ -82,7 +78,7 @@ void ScriptManager::LoadScript(const char* filename) {
 			}
 		}
 
-		// =-=- ARGS
+		// =-=-=-=-=--=-=-=-=  ARGS  =-=-=-=--=-=-=--=
 		unsigned int j = 0;
 		string _args[5];
 
@@ -112,20 +108,34 @@ void ScriptManager::LoadScript(const char* filename) {
 		}
 
 		frame.args.insert(frame.args.end(), &_args[0], &_args[5]);
-		frameCalls.push_back(frame);
 	}
-
-	////temp: testing
-	//cout << "show vector:" << endl;
-	//for (int i = 0; i < frameCalls.size(); i++) {
-	//	cout << "Frame:" << frameCalls[i].frame << "_args: " << frameCalls[i].args[1] << " cmd: " << frameCalls[i].call << endl;
-	//}
-
 	fileStream.close();
+	return outFrameCalls;
 }
 
-
-vector<FrameCall> ScriptManager::GetVectorFrameCalls() {
-	return frameCalls;
+bool ScriptManager::SaveScript(const char* fileName, std::vector<FrameCall> framecalls)
+{
+	return false;
 }
 
+void ScriptManager::AddScriptFunction(const char* functionName, std::function<void(char**)> func)
+{
+	funcStruct f;
+	f.Name = functionName;
+	f.func = func;
+	functionsVector.push_back(f);
+}
+
+void ScriptManager::CallFunction(const char* functionName, char** args)
+{
+	for (funcStruct i : functionsVector) 
+	{
+		if (i.Name == functionName) {
+			i.func(args);
+			return;
+		}
+
+	}
+	//TODO: better way to show errors
+	cout << ">> ERROR: trying to call function that don't exist" << endl;
+}

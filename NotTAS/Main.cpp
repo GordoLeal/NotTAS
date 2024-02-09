@@ -1,30 +1,22 @@
 #include <iostream>
 #include <Windows.h>
+#include "FuncInterpreter.h"
 #include "ScriptManager.h"
 #include "MainWindow.h"
 
 using namespace std;
 
 int main() {
-	////
-	//cout << "reading..." << endl;
-	//ScriptManager loader;
-	//loader.LoadScript("D:\\Projetos Visual Studio\\GordoTAS\\x64\\Debug\\teste.txt");
-	//vector<FrameCall> frames = loader.GetVectorFrameCalls();
-	//for (FrameCall f : frames)
-	//{
-	//	cout << "call: " << f.call << " number: " << f.frame << endl;
-	//	for (size_t i = 0; i < 5; i++)
-	//	{
-	//		cout << "args: " <<i <<" : " << f.args[i] << endl;
-	//	}
-	//};
 	
-	cout << "done..." << endl;
+	ScriptManager& sMan = ScriptManager::GetInstance();
+	// Load names + functions into the ScriptManager
+	sMan.AddScriptFunction("keyboard", FuncInterpreter::AddKeyboardInput);
+	sMan.AddScriptFunction("mouse",FuncInterpreter::AddMouseInput);
+	sMan.AddScriptFunction("movemouse",FuncInterpreter::AddMouseMoveInput);
 
 	bool KeepLooping = true;
-	MainWindow* mWindow = new MainWindow();
-
+	MainWindow* mWindow = new MainWindow(); //Maybe we can make MainWindow a singleton since we only need one.
+	
 	while (KeepLooping) {
 		if (mWindow->IsApplicationCloseRequest()) {
 			KeepLooping = false;

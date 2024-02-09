@@ -128,15 +128,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FuncInterpreter.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
-    <ClCompile Include="WindowsAPI.cpp" />
+    <ClCompile Include="InputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FuncInterpreter.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="ScriptManager.h" />
-    <ClInclude Include="WindowsAPI.h" />
+    <ClInclude Include="InputManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <iostream>
 #include "MainWindow.h"
-#include "WindowsAPI.h"
+#include "InputManager.h"
 
 #define MainWindow_Button 1
 
@@ -76,8 +76,7 @@ bool MainWindow::IsApplicationCloseRequest()
 
 LRESULT MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	WindowsAPI* wApi = new WindowsAPI();
-	//wApi->SetGameHandle(L"Pineapple-Win64-Shipping.exe", "Sponge");
+	InputManager* inManager = new InputManager();
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -85,17 +84,37 @@ LRESULT MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_COMMAND:
-		if (wParam == MainWindow_Button) {
-			wApi->SetGameHandle(L"Pineapple-Win64-Shipping.exe", "Sponge");
-			/*Sleep(1000);
-			wApi->AddKeyboardInput('w', WindowsAPI::keydown);
-			wApi->SendSavedInputs();
-			Sleep(5000);
-			wApi->AddKeyboardInput('w', WindowsAPI::keyup);
-			wApi->SendSavedInputs();*/
+		if (wParam == MainWindow_Button)
+		{
+			//char a[] = "Sponge";
+			//inManager->SetGameHandle(L"Pineapple-Win64-Shipping.exe", a);
+			//inManager->FocusOnGameWindow();
+			////printf("SENDING VIA POST MESSAGE \n");
+			//Sleep(1000);
+			//inManager->AddKeyboardInput('w', InputManager::PM_KeyDown);
+			//inManager->AddSpecialKeyboardInput(InputManager::Space, InputManager::PM_KeyDown);
+			//inManager->SendSavedInputs();
+			//Sleep(1000);
+			//inManager->AddKeyboardInput('w', InputManager::PM_KeyUp);
+			//inManager->AddSpecialKeyboardInput(InputManager::Space, InputManager::PM_KeyUp);
+			//inManager->AddMouseInput(InputManager::RightClick, InputManager::PM_KeyDown);
+			//inManager->AddMouseMoveInput(400, 0, InputManager::SI_MoveMouse);
+			//inManager->SendSavedInputs();
+			//Sleep(1000);
+			//inManager->AddMouseInput(InputManager::RightClick, InputManager::PM_KeyUp);
+			//inManager->AddMouseMoveInput(450, 0, InputManager::SI_MoveMouse);
+			//inManager->SendSavedInputs();
+			//Sleep(1000);
+			//inManager->AddKeyboardInput('q', InputManager::PM_KeyDown);
+			//inManager->SendSavedInputs();
+			//Sleep(50);
+			//inManager->AddKeyboardInput('q', InputManager::PM_KeyUp);
+			//inManager->SendSavedInputs();
 		}
+
 		break;
 	case WM_CLOSE:
+		//TODO: correctly close everything and clear memory
 		PostQuitMessage(0);
 		break;
 	}
