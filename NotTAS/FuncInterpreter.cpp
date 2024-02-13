@@ -1,13 +1,19 @@
+#include "InputManager.h"
+#include "MainLogic.h"
 #include "FuncInterpreter.h"
-#include "InputManager.h";
+
 using namespace std;
 
-void FuncInterpreter::AddKeyboardInput(char** args)
+/// <summary>
+/// script call: keyboard(key, keyevent)
+/// </summary>
+/// <param name="args"></param>
+void FuncInterpreter::AddKeyboardInput(std::vector<std::string> args)
 {
 	InputManager& inM = InputManager::GetInstance();
-	if (sizeof(args[0]) > 1) {
+	std::cout << "size: " << sizeof(args[0]) << std::endl;
+	if (args[0].size() > 1) {
 		//Is probably a special key
-
 		InputManager::SpecialKeyboardInputs sKeyIn = InputManager::ConvertToSpecialKeyboardKeyHelper(args[0]);
 		InputManager::KeyEvents kEvent = InputManager::ConvertToKeyEventHelper(args[1]);
 		inM.AddSpecialKeyboardInput(sKeyIn, kEvent);
@@ -22,15 +28,22 @@ void FuncInterpreter::AddKeyboardInput(char** args)
 
 }
 
-void FuncInterpreter::AddMouseInput(char** args)
+/// <summary>
+/// script call: mouse(key,keyevent)
+/// </summary>
+/// <param name="args"></param>
+void FuncInterpreter::AddMouseInput(std::vector<std::string> args)
 {
 	InputManager& inM = InputManager::GetInstance();
 	InputManager::MouseInputs mIn = InputManager::ConvertToMouseClick(args[0]);
 	InputManager::KeyEvents kEvent = InputManager::ConvertToKeyEventHelper(args[1]);
 	inM.AddMouseInput(mIn, kEvent);
 }
-
-void FuncInterpreter::AddMouseMoveInput(char** args)
+/// <summary>
+/// script call: movemouse(x,y)
+/// </summary>
+/// <param name="args"></param>
+void FuncInterpreter::AddMouseMoveInput(std::vector<std::string> args)
 {
 	int x;
 	int y;
@@ -51,6 +64,18 @@ void FuncInterpreter::AddMouseMoveInput(char** args)
 
 	//Post Message on move mouse does nothing, unless i am missing something, but for now gonna only use move mouse.
 	InputManager::AddMouseMoveInput(x, y, InputManager::KeyEvents::SI_MoveMouse);
+}
+
+void FuncInterpreter::AddGameInFocus(std::vector<std::string> args)
+{
+	printf("Gettting game in focus");
+	InputManager& inm = InputManager::GetInstance();
+	inm.FocusOnGameWindow();
+}
+
+void FuncInterpreter::StopTAS(std::vector<std::string> args) {
+	MainLogic& ml = MainLogic::GetInstance();
+	ml.StopExecution();
 }
 
 

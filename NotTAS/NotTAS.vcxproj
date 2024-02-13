@@ -130,12 +130,14 @@
   <ItemGroup>
     <ClCompile Include="FuncInterpreter.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="MainLogic.cpp" />
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FuncInterpreter.h" />
+    <ClInclude Include="MainLogic.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="InputManager.h" />

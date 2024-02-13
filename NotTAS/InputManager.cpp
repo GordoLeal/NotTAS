@@ -1,6 +1,8 @@
-#include <future>
-#include <iostream>
 #include "InputManager.h"
+#include <iostream>
+#include <vector>
+#include <TlHelp32.h>
+#include <future>
 
 using namespace std;
 
@@ -148,6 +150,7 @@ void InputManager::AddMouseMoveInput(int x, int y, InputManager::KeyEvents inEve
 	inM.inputsVector.push_back(outStruct);
 }
 
+
 // -=-=--=-=-=--=-=-=-=--=-=-=-=-=-=-=-=-= SENDING INPUTS =-=-=--==-=-=-=--=-=-=-=-=-=-=-=--=-=-=-=--=-
 
 /// <summary>
@@ -213,7 +216,6 @@ void InputManager::SendSavedInputs()
 	}
 	if (arrOutInput.size() > 0) {
 
-		cout << "SENDING.. " << arrOutInput.size() << endl;
 		int erroRet = SendInput(sizeof(arrOutInput), arrOutInput.data(), sizeof(INPUT));
 		if (erroRet == 0) {
 			cout << ">> ERROR SENDING Move Mouse INPUT via SI: " << GetLastError() << endl;
@@ -289,19 +291,20 @@ void InputManager::FocusOnGameWindow()
 	SetForegroundWindow(inM.gameWindowHwnd);
 }
 
-static string ToLower(char* in)
+static string ToLower(std::string in)
 {
 	string outResult;
-	for (int i = 0; i < strlen(in); i++)
+	for (int i = 0; i < in.size(); i++)
 		outResult += tolower(in[i]);
 	return outResult;
 }
 
-InputManager::KeyEvents InputManager::ConvertToKeyEventHelper(char* in)
+// =-=-=-=-=-=-=-=--=-=-=--=-=--== HELPERS =-=-=-=-=-=-=-=-=-=-=--=
+
+InputManager::KeyEvents InputManager::ConvertToKeyEventHelper(std::string in)
 {
 	string keyEventString = ToLower(in);
 	InputManager::KeyEvents kEvent;
-
 	//Yanderer simulator dev, but it works and switch in c++ is just stupid to work with strings, so a bunch of if-else it is.
 	if (keyEventString == "pm_keydown") { kEvent = InputManager::KeyEvents::PM_KeyDown; }
 	else if (keyEventString == "pm_keyup") { kEvent = InputManager::KeyEvents::PM_KeyUp; }
@@ -310,15 +313,15 @@ InputManager::KeyEvents InputManager::ConvertToKeyEventHelper(char* in)
 	else if (keyEventString == "pm_movemouse") { kEvent = InputManager::KeyEvents::PM_MoveMouse; }
 	else if (keyEventString == "si_movemouse") { kEvent = InputManager::KeyEvents::SI_MoveMouse; }
 	else {
-		cout << ">> ERROR: invalid string while trying to convert parameter as KeyEvent in ConvertToKeyEventHelper" << endl;
+		printf(">> ERROR: invalid string while trying to convert parameter as KeyEvent in ConvertToKeyEventHelper: %s", in);
 		//TODO: Better way to show errors to the user
-		return;
+		return InputManager::KeyEvents::err;
 	}
 
 	return kEvent;
 }
 
-InputManager::SpecialKeyboardInputs InputManager::ConvertToSpecialKeyboardKeyHelper(char* in)
+InputManager::SpecialKeyboardInputs InputManager::ConvertToSpecialKeyboardKeyHelper(std::string in)
 {
 	string keyEventString = ToLower(in);
 	InputManager::SpecialKeyboardInputs kEvent;
@@ -329,28 +332,31 @@ InputManager::SpecialKeyboardInputs InputManager::ConvertToSpecialKeyboardKeyHel
 	else if (keyEventString == "rightctrl") { kEvent = InputManager::SpecialKeyboardInputs::RightCtrl; }
 	else if (keyEventString == "rightshift") { kEvent = InputManager::SpecialKeyboardInputs::RightShift; }
 	else if (keyEventString == "space") { kEvent = InputManager::SpecialKeyboardInputs::Space; }
+	else if (keyEventString == "esc") { kEvent = InputManager::SpecialKeyboardInputs::Esc; }
 	else {
-		cout << ">> ERROR: invalid string while trying to convert parameter as SpecialKey in ConvertToSpecialKeyboardKeyHelper" << endl;
+		printf(">> ERROR: invalid string while trying to convert parameter as SpecialKey in ConvertToSpecialKeyboardKeyHelper %s", in);
 		//TODO: Better way to show errors to the user
-		return;
+		return InputManager::SpecialKeyboardInputs::errSK;
 	}
 
-	return;
+	return kEvent;
 }
 
-InputManager::MouseInputs InputManager::ConvertToMouseClick(char* in)
+InputManager::MouseInputs InputManager::ConvertToMouseClick(std::string in)
 {
 	string kEventString = ToLower(in);
-	if (kEventString == "right") { kEventString = InputManager::MouseInputs::RightClick; }
-	else if (kEventString == "left") { kEventString = InputManager::MouseInputs::LeftRight; }
-	else if (kEventString == "middle") { kEventString = InputManager::MouseInputs::MiddleClick; }
+	InputManager::MouseInputs outMI;
+	if (kEventString == "right") { outMI= InputManager::MouseInputs::RightClick; }
+	else if (kEventString == "left") { outMI = InputManager::MouseInputs::LeftRight; }
+	else if (kEventString == "middle") { outMI = InputManager::MouseInputs::MiddleClick; }
 	else
 	{
-		cout << ">> ERROR: invalid string while trying to convert parameter as SpecialKey in ConvertToSpecialKeyboardKeyHelper" << endl;
+		printf(">> ERROR: invalid string while trying to convert parameter as SpecialKey in ConvertToMouseClick %s", in);
 		//TODO: Better way to show errors to the user
+		outMI = InputManager::MouseInputs::errM;
 	}
 
-	return;
+	return outMI;
 }
 
 

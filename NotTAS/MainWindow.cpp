@@ -1,7 +1,7 @@
 #include <Windows.h>
 #include <iostream>
 #include "MainWindow.h"
-#include "InputManager.h"
+#include "MainLogic.h"
 
 #define MainWindow_Button 1
 
@@ -76,40 +76,21 @@ bool MainWindow::IsApplicationCloseRequest()
 
 LRESULT MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	InputManager* inManager = new InputManager();
+	MainLogic& ml = MainLogic::GetInstance();
 	switch (uMsg)
 	{
 	case WM_CREATE:
-
+		ml.Setup();
 		break;
 
 	case WM_COMMAND:
 		if (wParam == MainWindow_Button)
 		{
-			//char a[] = "Sponge";
-			//inManager->SetGameHandle(L"Pineapple-Win64-Shipping.exe", a);
-			//inManager->FocusOnGameWindow();
-			////printf("SENDING VIA POST MESSAGE \n");
-			//Sleep(1000);
-			//inManager->AddKeyboardInput('w', InputManager::PM_KeyDown);
-			//inManager->AddSpecialKeyboardInput(InputManager::Space, InputManager::PM_KeyDown);
-			//inManager->SendSavedInputs();
-			//Sleep(1000);
-			//inManager->AddKeyboardInput('w', InputManager::PM_KeyUp);
-			//inManager->AddSpecialKeyboardInput(InputManager::Space, InputManager::PM_KeyUp);
-			//inManager->AddMouseInput(InputManager::RightClick, InputManager::PM_KeyDown);
-			//inManager->AddMouseMoveInput(400, 0, InputManager::SI_MoveMouse);
-			//inManager->SendSavedInputs();
-			//Sleep(1000);
-			//inManager->AddMouseInput(InputManager::RightClick, InputManager::PM_KeyUp);
-			//inManager->AddMouseMoveInput(450, 0, InputManager::SI_MoveMouse);
-			//inManager->SendSavedInputs();
-			//Sleep(1000);
-			//inManager->AddKeyboardInput('q', InputManager::PM_KeyDown);
-			//inManager->SendSavedInputs();
-			//Sleep(50);
-			//inManager->AddKeyboardInput('q', InputManager::PM_KeyUp);
-			//inManager->SendSavedInputs();
+			
+			
+			ml.ExecuteScript((char*)"teste.txt");
+
+
 		}
 
 		break;
