@@ -1,6 +1,9 @@
+#include <iostream>
 #include "InputManager.h"
 #include "MainLogic.h"
 #include "FuncInterpreter.h"
+#include "MemoryAccess.h"
+#include "ProcessAccess.h"
 
 using namespace std;
 
@@ -11,7 +14,6 @@ using namespace std;
 void FuncInterpreter::AddKeyboardInput(std::vector<std::string> args)
 {
 	InputManager& inM = InputManager::GetInstance();
-	std::cout << "size: " << sizeof(args[0]) << std::endl;
 	if (args[0].size() > 1) {
 		//Is probably a special key
 		InputManager::SpecialKeyboardInputs sKeyIn = InputManager::ConvertToSpecialKeyboardKeyHelper(args[0]);
@@ -68,9 +70,22 @@ void FuncInterpreter::AddMouseMoveInput(std::vector<std::string> args)
 
 void FuncInterpreter::AddGameInFocus(std::vector<std::string> args)
 {
-	printf("Gettting game in focus");
-	InputManager& inm = InputManager::GetInstance();
+	ProcessAccess& inm = ProcessAccess::GetInstance();
 	inm.FocusOnGameWindow();
+}
+
+void FuncInterpreter::SetGameFPS(std::vector<std::string> args)
+{
+	printf("getting fpsStartAddress from offsets \n");
+	ProcessAccess& pa = ProcessAccess::GetInstance();
+	//TODO: Read this value from another place, a file or settings
+	intptr_t fpsStartAddress = 0x03414EA0;
+	intptr_t gameModuleAddress = pa.GetGameBaseMemoryAddress();
+	//TODO: Read this value from another place, a file or settings
+	std::vector<DWORD> offsets{0x10,0x378};
+	intptr_t fpsAddress = MemoryAccess::GetAddressFromOffsets(pa.GetGameHwnd(), gameModuleAddress + fpsStartAddress, offsets);
+	MemoryAccess::WriteFloatToAdress(pa.GetGameHwnd(), fpsAddress, stof(args[0]));
+
 }
 
 void FuncInterpreter::StopTAS(std::vector<std::string> args) {

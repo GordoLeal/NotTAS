@@ -1,10 +1,10 @@
-#ifndef INPUTMANAGER_H
-#define INPUTMANAGER_H
 #include <iostream>
 #include <vector>
 #include <Windows.h>
 #include <TlHelp32.h>
 #include <future>
+#ifndef INPUTMANAGER_H
+#define INPUTMANAGER_H
 
 /// <summary>
 /// responsable for holding the information about the process and functions that send inputs.
@@ -91,9 +91,8 @@ public:
 private:
 	// Private constructor to prevent direct instantiation
 	InputManager() {}
-	static int FindProcbyName(const wchar_t* name);
-	HANDLE gameHwnd = nullptr;
-	HWND gameWindowHwnd = nullptr;
+	//HANDLE gameHwnd = nullptr;
+	//HWND gameWindowHwnd = nullptr;
 	//InputManager() = default; 
 	~InputManager() = default;
 };

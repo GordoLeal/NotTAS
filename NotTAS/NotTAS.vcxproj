@@ -132,6 +132,8 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainLogic.cpp" />
     <ClCompile Include="MainWindow.cpp" />
+    <ClCompile Include="MemoryAccess.cpp" />
+    <ClCompile Include="ProcessAccess.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
   </ItemGroup>
@@ -139,6 +141,8 @@
     <ClInclude Include="FuncInterpreter.h" />
     <ClInclude Include="MainLogic.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="MemoryAccess.h" />
+    <ClInclude Include="ProcessAccess.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="InputManager.h" />
   </ItemGroup>

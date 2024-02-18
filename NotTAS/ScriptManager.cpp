@@ -4,10 +4,14 @@
 #include <fstream>
 #include "ScriptManager.h"
 
+//Note: I could use Ellipsis for the parameters, but for the sake of sanity and consistency, i choose to stick with an static ammount.
+#define MAX_ARGS_SIZE 5
+
 // LoadScripts from file.
 // The line should be: TIMEFRAME function (args1, args2 ..., args5) \n
 // Max number of args is 5.
-std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filename) {
+std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filename) { 
+	//TODO: make the LoadScript give a vector<FileLine> and set the return to be boolean or int, for error checking.
 
 	std::fstream fileStream(filename);
 	if (!fileStream.is_open()) {
@@ -21,10 +25,16 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 	while (std::getline(fileStream, lineText))
 	{
 		rLine++;
-		ScriptManager::FileLine frame;
 
+		if (lineText.empty())
+			continue;
+		
+		//=-=-=-=--=-=-=--=-=--=-=--= COMMENT -==-=-=--=-=--=--=-=-=-=-
 
+		if (lineText.at(0) == '!' )
+			continue;
 		// =-=-=-=-=-=-=-=--=-=--= Frame number =--=-=-=--=-=-=--=-=--=
+		ScriptManager::FileLine frame;
 
 		size_t posStartBracks = lineText.find('<');
 		size_t posEndBracks = lineText.find('>');
@@ -83,7 +93,7 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 
 		int j = 0;
 		std::string _args;
-		frame.args.resize(5);
+		frame.args.resize(MAX_ARGS_SIZE);
 		frame.args[j] = _args;
 		for (int i = posStartParentheses + 1; i < lineText.size(); i++) {
 			char lineC = lineText[i];
@@ -96,7 +106,7 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 					frame.args[j] = _args;
 					_args = {};
 					j++;
-					if (j > 5) {
+					if (j > MAX_ARGS_SIZE) {
 						//TODO: better way to show errors
 						std::cout << "wtf are you doing?" << std::endl;
 						std::cout << ">> ERROR way to much arguments" << rLine << std::endl; //better way to handle errors
@@ -150,7 +160,6 @@ void ScriptManager::CallFunction(std::string funcName, std::vector<std::string> 
 }
 
 bool ForVectorComparisson(ScriptManager::FileLine& frame1, ScriptManager::FileLine& frame2) {
-	std::cout << "ForVectorComparisson" << std::endl;
 	return (frame1.frame < frame2.frame);
 }
 
@@ -168,7 +177,7 @@ void ScriptManager::LoadScript(char* filename) {
 	//Reserving memory 
 	FrameCall* currentFrameCalls = new FrameCall();
 	FrameFunction* ff = new FrameFunction();
-	ff->args.reserve(5);
+	ff->args.reserve(MAX_ARGS_SIZE);
 	bool found = false;
 	currentFrameCalls->frameNumber = lines[0].frame;
 	for (int i = 0; i < lines.size(); i++) {

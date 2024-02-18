@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+
 #include "MainLogic.h"
 
 void MainLogic::ExecuteScript(char* fileName)
@@ -33,7 +34,6 @@ void MainLogic::ExecuteFrame(unsigned long frame)
 	ScriptManager::FrameCall currentFrameCalls;
 	if (_sm.GetFunctionsFromFrame(frame, &currentFrameCalls)) {
 		for (ScriptManager::FrameFunction i : currentFrameCalls.calls) {
-			std::cout << i.args.size() << " <<<args" << std::endl;
 			//Convert vector string to char* array;
 			if (_sm.FunctionExist(i.funcNameA))
 				_sm.CallFunction(i.funcNameA, i.args);
@@ -57,9 +57,10 @@ void MainLogic::Setup()
 	_sm.AddScriptFunction("movemouse", FuncInterpreter::AddMouseMoveInput);
 	_sm.AddScriptFunction("showgame", FuncInterpreter::AddGameInFocus);
 	_sm.AddScriptFunction("stop", FuncInterpreter::StopTAS);
+	_sm.AddScriptFunction("setfps", FuncInterpreter::SetGameFPS);
 
-	//TEMP
+	//TEMP: Change how all these settingns are loaded instead of hardcoded.
 	_sm.LoadScript((char*)"teste.txt");
 
-	_inm.SetGameHandle(L"Pineapple-Win64-Shipping.exe", (char*)"Sponge");
+	_pa.SetGameHandle(L"Pineapple-Win64-Shipping.exe", (char*)"Sponge");
 }

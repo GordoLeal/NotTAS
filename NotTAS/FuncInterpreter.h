@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+/// <summary>
+/// Interpretation layer between what is written on the script file and the source code.
+/// </summary>
 class FuncInterpreter
 {
 public:
@@ -13,6 +16,7 @@ public:
 	static void AddMouseMoveInput(std::vector<std::string> args);
 	static void AddGameInFocus(std::vector<std::string> args);
 	static void StopTAS(std::vector<std::string> args);
+	static void SetGameFPS(std::vector<std::string> args);
 private:
 	~FuncInterpreter() = default;
 

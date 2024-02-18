@@ -1,4 +1,5 @@
 #include "InputManager.h"
+#include "ProcessAccess.h"
 #include <iostream>
 #include <vector>
 #include <TlHelp32.h>
@@ -186,6 +187,8 @@ BOOL SendMouseMoveMessageToApp(HWND handle, UINT type, int x, int y) {
 void InputManager::SendSavedInputs()
 {
 	InputManager& inM = InputManager::GetInstance();
+	ProcessAccess& pa = ProcessAccess::GetInstance();
+	
 	//this way of sending inputs one by one via sendinput is not ideal for the way sendinput works.
 	vector<INPUT> arrOutInput;
 	for (InputStruct i : inM.inputsVector)
@@ -193,7 +196,7 @@ void InputManager::SendSavedInputs()
 		//why not switch? because of the variables of the async call. this would generate a compiler error.
 		if (i.keyevent == PM_KeyUp || i.keyevent == PM_KeyDown)
 		{
-			std::future<BOOL> a = std::async(SendInputMessageToApp, inM.gameWindowHwnd, i.keyevent, i.key);
+			std::future<BOOL> a = std::async(SendInputMessageToApp, pa.GetGameWindowHandle(), i.keyevent, i.key);
 			a.get();
 		}
 		else if (i.keyevent == SI_KeyUp || i.keyevent == SI_KeyDown) //is not Post Message, is Send Input
@@ -202,7 +205,7 @@ void InputManager::SendSavedInputs()
 		}
 		else if (i.keyevent == PM_MoveMouse) // if the user wants to try it they can, but majority of application will do nothing with this message.
 		{
-			std::future<BOOL> a = std::async(SendMouseMoveMessageToApp, inM.gameWindowHwnd, i.keyevent, i.dirX, i.dirY);
+			std::future<BOOL> a = std::async(SendMouseMoveMessageToApp, pa.GetGameWindowHandle(), i.keyevent, i.dirX, i.dirY);
 			a.get();
 		}
 		else if (i.keyevent == SI_MoveMouse)
@@ -225,71 +228,74 @@ void InputManager::SendSavedInputs()
 	inM.inputsVector.clear();
 }
 
-// =-=-=-=-=-=-=-=-=-=-=--=-=--=-=-=--=-=-=-= GAME HANDLES =-=-=-=-=--=-=-=--=-=-=-=-=--=-=--=-=--=-=--=-=--=-=-
+//// =-=-=-=-=-=-=-=-=-=-=--=-=--=-=-=--=-=-=-= GAME HANDLES =-=-=-=-=--=-=-=--=-=-=-=-=--=-=--=-=--=-=--=-=--=-=-
+//
+//struct SendToWind
+//{
+//	HWND windowHandle;
+//	char* name;
+//};
+//
+//BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
+//	SendToWind& sa = *reinterpret_cast<SendToWind*>(lParam);
+//	char a[255] = {};
+//	GetWindowTextA(hwnd, a, 255);
+//	if (strstr(a, sa.name))
+//	{
+//		sa.windowHandle = hwnd;
+//		return false;
+//	}
+//	return true;
+//};
+//
+////Sets the game handle and window handle for the application that is gonna receive the inputs.
+//bool InputManager::SetGameHandle(const wchar_t ExeName[], char gameWindowName[])
+//{
+//	int processID = FindProcbyName(ExeName);
+//	InputManager& inM = InputManager::GetInstance();
+//
+//	if (processID == 0) { // 0 = windows explorer.
+//		MessageBoxW(NULL, L"Process not found. is the application open?", L"", MB_OK);
+//		return false;
+//	}
+//
+//	inM.gameHwnd = OpenProcess(
+//		PROCESS_QUERY_INFORMATION | //get process handler
+//		PROCESS_VM_READ, // read into process memory
+//		false,
+//		processID
+//	);
+//
+//	//i don't like this hack way of getting the handle of the game window, but it works...
+//	SendToWind sba;
+//	sba.name = gameWindowName;
+//
+//	if (!EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&sba)))
+//	{
+//		//TODO: do something if can't find window
+//	};
+//
+//	inM.gameWindowHwnd = sba.windowHandle;
+//	if (inM.gameWindowHwnd == NULL) {
+//		MessageBoxW(NULL, L"Window handle not found. is the application open?", L"", MB_OK);
+//		return false;
+//	}
+//	return true;
+//}
+//
+//void InputManager::FocusOnGameWindow()
+//{
+//	InputManager& inM = InputManager::GetInstance();
+//	if (inM.gameWindowHwnd == NULL) {
+//		//TODO: better way to show this message to the user
+//		cout << ">> ERROR: trying to call gameWindowHwnd without setting it first. please call SetGameHandle First." << endl;
+//		return;
+//	}
+//	SetForegroundWindow(inM.gameWindowHwnd);
+//}
+//
 
-struct SendToWind
-{
-	HWND windowHandle;
-	char* name;
-};
-
-BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
-	SendToWind& sa = *reinterpret_cast<SendToWind*>(lParam);
-	char a[255] = {};
-	GetWindowTextA(hwnd, a, 255);
-	if (strstr(a, sa.name))
-	{
-		sa.windowHandle = hwnd;
-		return false;
-	}
-	return true;
-};
-
-//Sets the game handle and window handle for the application that is gonna receive the inputs.
-bool InputManager::SetGameHandle(const wchar_t ExeName[], char gameWindowName[])
-{
-	int processID = FindProcbyName(ExeName);
-	InputManager& inM = InputManager::GetInstance();
-
-	if (processID == 0) { // 0 = windows explorer.
-		MessageBoxW(NULL, L"Process not found. is the application open?", L"", MB_OK);
-		return false;
-	}
-
-	inM.gameHwnd = OpenProcess(
-		PROCESS_QUERY_INFORMATION | //get process handler
-		PROCESS_VM_READ, // read into process memory
-		false,
-		processID
-	);
-
-	//i don't like this hack way of getting the handle of the game window, but it works...
-	SendToWind sba;
-	sba.name = gameWindowName;
-
-	if (!EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&sba)))
-	{
-		//TODO: do something if can't find window
-	};
-
-	inM.gameWindowHwnd = sba.windowHandle;
-	if (inM.gameWindowHwnd == NULL) {
-		MessageBoxW(NULL, L"Window handle not found. is the application open?", L"", MB_OK);
-		return false;
-	}
-	return true;
-}
-
-void InputManager::FocusOnGameWindow()
-{
-	InputManager& inM = InputManager::GetInstance();
-	if (inM.gameWindowHwnd == NULL) {
-		//TODO: better way to show this message to the user
-		cout << ">> ERROR: trying to call gameWindowHwnd without setting it first. please call SetGameHandle First." << endl;
-		return;
-	}
-	SetForegroundWindow(inM.gameWindowHwnd);
-}
+// =-=-=-=-=-=-=-=--=-=-=--=-=--== HELPERS =-=-=-=-=-=-=-=-=-=-=--=
 
 static string ToLower(std::string in)
 {
@@ -298,8 +304,6 @@ static string ToLower(std::string in)
 		outResult += tolower(in[i]);
 	return outResult;
 }
-
-// =-=-=-=-=-=-=-=--=-=-=--=-=--== HELPERS =-=-=-=-=-=-=-=-=-=-=--=
 
 InputManager::KeyEvents InputManager::ConvertToKeyEventHelper(std::string in)
 {
@@ -357,31 +361,4 @@ InputManager::MouseInputs InputManager::ConvertToMouseClick(std::string in)
 	}
 
 	return outMI;
-}
-
-
-
-//Find Process ID by Name
-int InputManager::FindProcbyName(const wchar_t* name) {
-	PROCESSENTRY32 singleProcess; //hold process
-	singleProcess.dwSize = sizeof(PROCESSENTRY32);
-	HANDLE h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0); //get all the process currently open in the system
-	if (GetLastError() == ERROR_ACCESS_DENIED) {
-		MessageBoxW(nullptr, L"ERROR TRYING TO GET SNAPSHOT (ACCESS DENIED)", L"ERROR", MB_OK);
-		//std::cout << "ERROR TRYING TO GET SNAPSHOT" << std::endl;
-		return 1;
-	}
-
-	do {
-		if (wcscmp(singleProcess.szExeFile, name) == 0) {
-			printf("FOUND Exe: %S \n", singleProcess.szExeFile);
-			DWORD processID = singleProcess.th32ProcessID; //get process ID
-			CloseHandle(h);
-			return processID;
-		}
-
-	} while (Process32NextW(h, &singleProcess));
-
-	CloseHandle(h);
-	return 0;
 }
