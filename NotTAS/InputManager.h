@@ -1,10 +1,10 @@
+#ifndef INPUTMANAGER_H
+#define INPUTMANAGER_H
 #include <iostream>
 #include <vector>
 #include <Windows.h>
 #include <TlHelp32.h>
 #include <future>
-#ifndef INPUTMANAGER_H
-#define INPUTMANAGER_H
 
 /// <summary>
 /// responsable for holding the information about the process and functions that send inputs.

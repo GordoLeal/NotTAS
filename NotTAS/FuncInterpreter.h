@@ -3,6 +3,9 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "MainLogic.h"
+#include "MemoryAccess.h"
+#include "ProcessAccess.h"
 
 /// <summary>
 /// Interpretation layer between what is written on the script file and the source code.
@@ -17,6 +20,8 @@ public:
 	static void AddGameInFocus(std::vector<std::string> args);
 	static void StopTAS(std::vector<std::string> args);
 	static void SetGameFPS(std::vector<std::string> args);
+	static void WaitLoadStart(std::vector<std::string> args);
+	static void WaitLoadEnd(std::vector<std::string> args);
 private:
 	~FuncInterpreter() = default;
 

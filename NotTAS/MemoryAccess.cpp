@@ -9,9 +9,16 @@ float MemoryAccess::GetFloatInAddress(HANDLE handle, intptr_t address)
 	float buffer1 = 0.000;
 	int err1 = ReadProcessMemory(handle, (LPCVOID)address, &buffer1, sizeof(buffer1), nullptr);
 	if (err1 == 0) {
-		std::cout << ">> ERROR: error getting last address after offsets:" << GetLastError() << std::endl;
+		std::cout << ">> ERROR: error getting float from address:" << GetLastError() << std::endl;
 		return 0;
 	}
+	return buffer1;
+}
+
+byte MemoryAccess::GetByteInAddress(HANDLE handle, intptr_t address)
+{
+	byte buffer1 = 0;
+	ReadProcessMemory(handle, (LPCVOID)address, &buffer1, sizeof(buffer1), nullptr);
 	return buffer1;
 }
 
@@ -34,14 +41,9 @@ intptr_t MemoryAccess::GetAddressFromOffsets(HANDLE handle, intptr_t address, st
 	return holdAddress + offsets.at(offsets.size() - 1);
 }
 
-void MemoryAccess::WriteFloatToAdress(HANDLE handle, intptr_t Address, float value)
-{
+void MemoryAccess::WriteFloatToAdress(HANDLE handle, intptr_t Address, float value) {
 	int err = WriteProcessMemory(handle, (LPVOID)Address, &value, sizeof(value), nullptr);
 	if (err == 0) {
 		std::cout << ">> ERROR: error writting memory :" << GetLastError() << std::endl;
 	}
-}
-
-void MemoryAccess::DoingMemoryTest()
-{
 }

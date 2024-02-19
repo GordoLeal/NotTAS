@@ -1,9 +1,6 @@
 #include <iostream>
 #include "InputManager.h"
-#include "MainLogic.h"
 #include "FuncInterpreter.h"
-#include "MemoryAccess.h"
-#include "ProcessAccess.h"
 
 using namespace std;
 
@@ -74,6 +71,16 @@ void FuncInterpreter::AddGameInFocus(std::vector<std::string> args)
 	inm.FocusOnGameWindow();
 }
 
+void FuncInterpreter::WaitLoadStart(std::vector<std::string> args)
+{
+	MainLogic::GetInstance().WaitingLoadingToStart = true;
+}
+
+void FuncInterpreter::WaitLoadEnd(std::vector<std::string> args)
+{
+	MainLogic::GetInstance().WaitingLoadingToEnd = true;
+}
+
 void FuncInterpreter::SetGameFPS(std::vector<std::string> args)
 {
 	printf("getting fpsStartAddress from offsets \n");
@@ -92,5 +99,3 @@ void FuncInterpreter::StopTAS(std::vector<std::string> args) {
 	MainLogic& ml = MainLogic::GetInstance();
 	ml.StopExecution();
 }
-
-

@@ -1,9 +1,5 @@
 #include "InputManager.h"
 #include "ProcessAccess.h"
-#include <iostream>
-#include <vector>
-#include <TlHelp32.h>
-#include <future>
 
 using namespace std;
 
@@ -227,73 +223,6 @@ void InputManager::SendSavedInputs()
 	arrOutInput.clear();
 	inM.inputsVector.clear();
 }
-
-//// =-=-=-=-=-=-=-=-=-=-=--=-=--=-=-=--=-=-=-= GAME HANDLES =-=-=-=-=--=-=-=--=-=-=-=-=--=-=--=-=--=-=--=-=--=-=-
-//
-//struct SendToWind
-//{
-//	HWND windowHandle;
-//	char* name;
-//};
-//
-//BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
-//	SendToWind& sa = *reinterpret_cast<SendToWind*>(lParam);
-//	char a[255] = {};
-//	GetWindowTextA(hwnd, a, 255);
-//	if (strstr(a, sa.name))
-//	{
-//		sa.windowHandle = hwnd;
-//		return false;
-//	}
-//	return true;
-//};
-//
-////Sets the game handle and window handle for the application that is gonna receive the inputs.
-//bool InputManager::SetGameHandle(const wchar_t ExeName[], char gameWindowName[])
-//{
-//	int processID = FindProcbyName(ExeName);
-//	InputManager& inM = InputManager::GetInstance();
-//
-//	if (processID == 0) { // 0 = windows explorer.
-//		MessageBoxW(NULL, L"Process not found. is the application open?", L"", MB_OK);
-//		return false;
-//	}
-//
-//	inM.gameHwnd = OpenProcess(
-//		PROCESS_QUERY_INFORMATION | //get process handler
-//		PROCESS_VM_READ, // read into process memory
-//		false,
-//		processID
-//	);
-//
-//	//i don't like this hack way of getting the handle of the game window, but it works...
-//	SendToWind sba;
-//	sba.name = gameWindowName;
-//
-//	if (!EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&sba)))
-//	{
-//		//TODO: do something if can't find window
-//	};
-//
-//	inM.gameWindowHwnd = sba.windowHandle;
-//	if (inM.gameWindowHwnd == NULL) {
-//		MessageBoxW(NULL, L"Window handle not found. is the application open?", L"", MB_OK);
-//		return false;
-//	}
-//	return true;
-//}
-//
-//void InputManager::FocusOnGameWindow()
-//{
-//	InputManager& inM = InputManager::GetInstance();
-//	if (inM.gameWindowHwnd == NULL) {
-//		//TODO: better way to show this message to the user
-//		cout << ">> ERROR: trying to call gameWindowHwnd without setting it first. please call SetGameHandle First." << endl;
-//		return;
-//	}
-//	SetForegroundWindow(inM.gameWindowHwnd);
-//}
-//
 
 // =-=-=-=-=-=-=-=--=-=-=--=-=--== HELPERS =-=-=-=-=-=-=-=-=-=-=--=
 

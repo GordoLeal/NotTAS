@@ -1,11 +1,12 @@
-#ifndef MAINLOGIC_H
-#define MAINLOGIC_H
 #include <iostream>
 #include <thread>
 #include "InputManager.h"
 #include "ScriptManager.h"
-#include "FuncInterpreter.h"
 #include "ProcessAccess.h"
+
+#ifndef MAINLOGIC_H
+#define MAINLOGIC_H
+
 
 /// <summary>
 /// Responsable for the main functions of the program like: calling scriptmanager to read from file and inserting the result into input manager, Holding the current frame of work and asking 
@@ -23,7 +24,11 @@ private:
 	ScriptManager& _sm = ScriptManager::GetInstance();
 	InputManager& _inm = InputManager::GetInstance();
 	ProcessAccess& _pa = ProcessAccess::GetInstance();
+	bool isInLoad = false;
+	void CheckLoad();
 public:
+	bool WaitingLoadingToStart = false;
+	bool WaitingLoadingToEnd = false;
 	void Setup();
 	void StopExecution();
 	static MainLogic& GetInstance() {

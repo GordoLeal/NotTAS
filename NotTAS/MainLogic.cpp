@@ -1,7 +1,8 @@
 #include <string>
 #include <vector>
-
 #include "MainLogic.h"
+#include "FuncInterpreter.h"
+#include "MemoryAccess.h"
 
 void MainLogic::ExecuteScript(char* fileName)
 {
@@ -22,11 +23,47 @@ void MainLogic::ExecutionThread(char* filename) {
 	while (keepLooping) {
 		printf("current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
-		//TODO: divide by the game framerate.
-		Sleep(60.0 / 60.0);
+		CheckLoad();
+		Sleep(60.0 / 60.0); //TODO: divide by the game framerate.
 		currentFrame++;
 	}
 
+}
+
+/// <summary>
+/// check the loading status
+/// </summary>
+void MainLogic::CheckLoad() {
+
+	if (WaitingLoadingToStart) {
+		//TODO: Read values from a file or settings file
+		std::vector<DWORD> offsets{ 0xA0 };
+		intptr_t loadAddress;
+		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
+		//bool didloadstart = false;
+		while (!isInLoad) {
+			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
+			std::cout << "Waiting for load to start: " << isInLoad << std::endl;
+		}
+		//Load started, now we wait for it to end;
+		WaitingLoadingToStart = false;
+	}
+
+	//if we are waiting for load to end, make sure the load at least started.
+	if (WaitingLoadingToEnd && isInLoad) {
+		//TODO: Read values from a file or settings file
+		//std::vector<DWORD> offsets{ 0xA0 };
+		std::vector<DWORD> offsets{ 0x20,0x1D0 };
+		intptr_t loadAddress;
+		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
+		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03319550, offsets);
+		while (isInLoad) {
+			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
+			std::cout << "Waiting for load to end: " << isInLoad << std::endl;
+		}
+		WaitingLoadingToEnd = false;
+
+	}
 }
 
 void MainLogic::ExecuteFrame(unsigned long frame)
@@ -58,6 +95,8 @@ void MainLogic::Setup()
 	_sm.AddScriptFunction("showgame", FuncInterpreter::AddGameInFocus);
 	_sm.AddScriptFunction("stop", FuncInterpreter::StopTAS);
 	_sm.AddScriptFunction("setfps", FuncInterpreter::SetGameFPS);
+	_sm.AddScriptFunction("waitloadstart", FuncInterpreter::WaitLoadStart);
+	_sm.AddScriptFunction("waitloadend", FuncInterpreter::WaitLoadEnd);
 
 	//TEMP: Change how all these settingns are loaded instead of hardcoded.
 	_sm.LoadScript((char*)"teste.txt");
