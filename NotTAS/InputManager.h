@@ -28,6 +28,7 @@ public:
 		LeftCtrl = 0xA2,
 		RightCtrl = 0xA3,
 		Esc = 0x1B,
+		Enter = 0x0D,
 		errSK
 	};
 
