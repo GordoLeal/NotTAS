@@ -266,6 +266,7 @@ InputManager::SpecialKeyboardInputs InputManager::ConvertToSpecialKeyboardKeyHel
 	else if (keyEventString == "rightshift") { kEvent = InputManager::SpecialKeyboardInputs::RightShift; }
 	else if (keyEventString == "space") { kEvent = InputManager::SpecialKeyboardInputs::Space; }
 	else if (keyEventString == "esc") { kEvent = InputManager::SpecialKeyboardInputs::Esc; }
+	else if (keyEventString == "enter") { kEvent = InputManager::SpecialKeyboardInputs::Enter; }
 	else {
 		printf(">> ERROR: invalid string while trying to convert parameter as SpecialKey in ConvertToSpecialKeyboardKeyHelper %s", in);
 		//TODO: Better way to show errors to the user
