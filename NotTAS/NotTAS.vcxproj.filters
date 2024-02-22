@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Access">
-      <UniqueIdentifier>{e652ec40-9e63-402f-b570-f3320b70972b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interface">
       <UniqueIdentifier>{803fb3ea-8a7c-41e1-a83d-418b9a2616dd}</UniqueIdentifier>
     </Filter>
@@ -36,14 +33,14 @@
     <ClCompile Include="MainLogic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MemoryAccess.cpp">
-      <Filter>Access</Filter>
-    </ClCompile>
-    <ClCompile Include="ProcessAccess.cpp">
-      <Filter>Access</Filter>
-    </ClCompile>
     <ClCompile Include="MainWindow.cpp">
       <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Access\MemoryAccess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Access\ProcessAccess.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -59,14 +56,14 @@
     <ClInclude Include="MainLogic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MemoryAccess.h">
-      <Filter>Access</Filter>
-    </ClInclude>
-    <ClInclude Include="ProcessAccess.h">
-      <Filter>Access</Filter>
-    </ClInclude>
     <ClInclude Include="MainWindow.h">
       <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Access\MemoryAccess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Access\ProcessAccess.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

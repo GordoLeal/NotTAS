@@ -2,7 +2,7 @@
 #include <thread>
 #include "InputManager.h"
 #include "ScriptManager.h"
-#include "ProcessAccess.h"
+#include "Access/ProcessAccess.h"
 
 #ifndef MAINLOGIC_H
 #define MAINLOGIC_H

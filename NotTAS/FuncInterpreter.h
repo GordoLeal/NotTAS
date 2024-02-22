@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 #include "MainLogic.h"
-#include "MemoryAccess.h"
-#include "ProcessAccess.h"
+#include "Access/MemoryAccess.h"
+#include "Access/ProcessAccess.h"
 
 /// <summary>
 /// Interpretation layer between what is written on the script file and the source code.

@@ -2,7 +2,7 @@
 #include <vector>
 #include "MainLogic.h"
 #include "FuncInterpreter.h"
-#include "MemoryAccess.h"
+#include "Access/MemoryAccess.h"
 
 void MainLogic::ExecuteScript(char* fileName)
 {

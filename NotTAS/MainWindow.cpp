@@ -3,19 +3,22 @@
 #include "MainWindow.h"
 #include "MainLogic.h"
 
-#define MainWindow_Button 1
+//main window
+constexpr int MW_Widght = 350;
+constexpr int MW_Height = 200;
+// cu button
+constexpr int MW_Button = 1;
+//playbutton
+constexpr int PlayButton_ID = 2;
 
 MainWindow::MainWindow() {
-
-	// Get Main Monitor size
-
 	//Create Main Window
-	const wchar_t MAINWINDOW_CLASSNAME[] = L"NOTTAS";
-	HINSTANCE hInstance = GetModuleHandleA(nullptr);
+	const wchar_t MAINWINDOW_CLASSNAME[] = L"NOT TAS";
+	HINSTANCE hInstance = GetModuleHandleA(nullptr); //get instance of module
 
 	WNDCLASS mwc = {};
 	mwc.lpszClassName = MAINWINDOW_CLASSNAME;
-	mwc.lpfnWndProc = MainWindowProc;
+	mwc.lpfnWndProc = MainWindowProc; //func that will receive all the messages
 	mwc.hInstance = hInstance;
 
 	RegisterClass(&mwc);
@@ -27,10 +30,7 @@ MainWindow::MainWindow() {
 		MAINWINDOW_CLASSNAME,                     // Window class
 		L"Not TAS",    // Window text
 		style,            // Window style
-
-		// Size and position
-		0, 0, 800, 450,
-
+		0, 0, MW_Widght, MW_Height, // Size and position
 		NULL,       // Parent window    
 		NULL,       // Menu
 		hInstance,  // Instance handle
@@ -43,23 +43,65 @@ MainWindow::MainWindow() {
 		return;
 	}
 
-	// Create instances of what is inside the main window
-	HWND bTest = CreateWindowExW(
+	// == Create instances of what is inside the main window ==
+	
+	//Test button;
+	HWND button_Play = CreateWindowExW(
 		0,
 		L"BUTTON",
-		L"CU",
+		L"Play",
 		WS_VISIBLE | WS_CHILD,
-		10, 10,
-		80, 20,
-		hwnd,
-		(HMENU)MainWindow_Button,
+		10, 10, //position
+		50, 25, //size
+		hwnd,   // stick the to the hwnd
+		(HMENU)PlayButton_ID,
 		hInstance,
 		NULL
 	);
 
-	std::cout << "all fine" << std::endl;
-	ShowWindow(hwnd, 1);
+	//Test button;
+	HWND button_Settings = CreateWindowExW(
+		0,
+		L"BUTTON",
+		L"Play",
+		WS_VISIBLE | WS_CHILD,
+		10, 10, //position
+		50, 25, //size
+		hwnd,   // stick the to the hwnd
+		(HMENU)PlayButton_ID,
+		hInstance,
+		NULL
+	);
 
+	//Test button;
+	HWND button_Editor = CreateWindowExW(
+		0,
+		L"BUTTON",
+		L"Play",
+		WS_VISIBLE | WS_CHILD,
+		10, 10, //position
+		50, 25, //size
+		hwnd,   // stick the to the hwnd
+		(HMENU)PlayButton_ID,
+		hInstance,
+		NULL
+	);
+
+	//Test button;
+	HWND bTest = CreateWindowExW(
+		0,
+		L"STATIC",
+		L"CU",
+		WS_VISIBLE | WS_CHILD,
+		60, 10, //position
+		25, 10, //size
+		hwnd,   // stick the to the hwnd
+		(HMENU)MW_Button,
+		hInstance,
+		NULL
+	);
+
+	ShowWindow(hwnd, 1);
 }
 
 bool MainWindow::IsApplicationCloseRequest()
@@ -80,17 +122,13 @@ LRESULT MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_CREATE:
-		ml.Setup();
+		//ml.Setup();
 		break;
 
 	case WM_COMMAND:
-		if (wParam == MainWindow_Button)
+		if (wParam == MW_Button)
 		{
-			
-			
-			ml.ExecuteScript((char*)"teste.txt");
-
-
+			//ml.ExecuteScript((char*)"teste.txt");
 		}
 
 		break;
