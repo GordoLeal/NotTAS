@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include <vector>
 #include "MainLogic.h"
@@ -11,13 +12,20 @@ void MainLogic::ExecuteScript(char* fileName)
 	}
 	else
 	{
+		//Code Safety during development, in case the script get executed twice.
+		std::cout << "!! WARNING: Stopping script from Execute Script Function." << std::endl;
 		StopExecution();
 	}
 }
 
 //Main Execution thread for reading the script and doing inputs
 void MainLogic::ExecutionThread(char* filename) {
+	if (_sm.FileExists(filename)) {
+		std::cout << ">> ERROR: Script File don't exist, please create one or make sure is not a typo." << std::endl;
+		return;
+	}
 	keepLooping = true;
+	std::cout << "Loading script: " << filename << std::endl;
 	_sm.LoadScript(filename);
 	currentFrame = 0;
 	while (keepLooping) {
@@ -71,7 +79,6 @@ void MainLogic::ExecuteFrame(unsigned long frame)
 	ScriptManager::FrameCall currentFrameCalls;
 	if (_sm.GetFunctionsFromFrame(frame, &currentFrameCalls)) {
 		for (ScriptManager::FrameFunction i : currentFrameCalls.calls) {
-			//Convert vector string to char* array;
 			if (_sm.FunctionExist(i.funcNameA))
 				_sm.CallFunction(i.funcNameA, i.args);
 		}
@@ -86,7 +93,22 @@ void MainLogic::StopExecution()
 	loopThread.detach();
 }
 
-void MainLogic::Setup()
+void MainLogic::LoadTASSCript()
+{
+	_sm.LoadScript((char*)ScriptName.c_str());
+}
+
+bool MainLogic::IsRunning()
+{
+	return keepLooping;
+}
+
+unsigned long MainLogic::GetCurrentFrame()
+{
+	return currentFrame;
+}
+
+void MainLogic::InitialSetup()
 {
 	// Load names + functions into the ScriptManager
 	_sm.AddScriptFunction("keyboard", FuncInterpreter::AddKeyboardInput);
@@ -98,8 +120,5 @@ void MainLogic::Setup()
 	_sm.AddScriptFunction("waitloadstart", FuncInterpreter::WaitLoadStart);
 	_sm.AddScriptFunction("waitloadend", FuncInterpreter::WaitLoadEnd);
 
-	//TEMP: Change how all these settingns are loaded instead of hardcoded.
-	_sm.LoadScript((char*)"teste.txt");
-
-	_pa.SetGameHandle(L"Pineapple-Win64-Shipping.exe", (char*)"Sponge");
+	std::cout << ">> Initial Setup: Everything loaded." << std::endl;
 }

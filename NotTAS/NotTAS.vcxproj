@@ -140,6 +140,9 @@
   <ItemGroup>
     <ClCompile Include="Access\MemoryAccess.cpp" />
     <ClCompile Include="Access\ProcessAccess.cpp" />
+    <ClCompile Include="Forms\Window_ControlPainel.cpp" />
+    <ClCompile Include="Forms\Window_Editor.cpp" />
+    <ClCompile Include="Forms\Window_Settings.cpp" />
     <ClCompile Include="FuncInterpreter.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainLogic.cpp" />
@@ -150,11 +153,38 @@
   <ItemGroup>
     <ClInclude Include="Access\MemoryAccess.h" />
     <ClInclude Include="Access\ProcessAccess.h" />
+    <ClInclude Include="Forms\Window_ControlPainel.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Forms\Window_Editor.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="Forms\Window_Settings.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="FuncInterpreter.h" />
     <ClInclude Include="MainLogic.h" />
     <ClInclude Include="MainWindow.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="InputManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Forms\Window_ControlPainel.resx">
+      <DependentUpon>Forms\Window_ControlPainel.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Window_Editor.resx">
+      <DependentUpon>Forms\Window_Editor.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Window_Settings.resx">
+      <DependentUpon>Forms\Window_Settings.h</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

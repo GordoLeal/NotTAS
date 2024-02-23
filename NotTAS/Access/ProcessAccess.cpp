@@ -22,7 +22,14 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 	return true;
 };
 
-//Sets the game handle and window handle for the application that is gonna receive the inputs.
+/// <summary>
+/// Sets the game handle and window handle for the application that is gonna receive the inputs.
+/// 
+/// We use Wide Char array because of windows api.
+/// </summary>
+/// <param name="ExeName"></param>
+/// <param name="gameWindowName"></param>
+/// <returns></returns>
 bool ProcessAccess::SetGameHandle(const wchar_t ExeName[], char gameWindowName[])
 {
 	int processID = FindProcbyName(ExeName);

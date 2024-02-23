@@ -122,7 +122,7 @@ LRESULT MainWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_CREATE:
-		//ml.Setup();
+		//ml.InitialSetup();
 		break;
 
 	case WM_COMMAND:

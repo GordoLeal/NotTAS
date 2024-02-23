@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
+#include <experimental/filesystem>
 #include "ScriptManager.h"
 
 //Note: I could use Ellipsis for the parameters, but for the sake of sanity and consistency, i choose to stick with an static ammount.
@@ -10,7 +11,7 @@
 // LoadScripts from file.
 // The line should be: TIMEFRAME function (args1, args2 ..., args5) \n
 // Max number of args is 5.
-std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filename) { 
+std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filename) {
 	//TODO: make the LoadScript give a vector<FileLine> and set the return to be boolean or int, for error checking.
 
 	std::fstream fileStream(filename);
@@ -28,12 +29,12 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 
 		if (lineText.empty())
 			continue;
-		
-		//=-=-=-=--=-=-=--=-=--=-=--= COMMENT -==-=-=--=-=--=--=-=-=-=-
 
-		if (lineText.at(0) == '!' )
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= COMMENT =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+		if (lineText.at(0) == '!')
 			continue;
-		// =-=-=-=-=-=-=-=--=-=--= Frame number =--=-=-=--=-=-=--=-=--=
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= Frame number =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		ScriptManager::FileLine frame;
 
 		size_t posStartBracks = lineText.find('<');
@@ -59,7 +60,7 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 
 		lineText.erase(lineText.begin(), lineText.begin() + posEndBracks + 1);
 
-		// =-=-=-=-=-=-=--=-=-=--=- Function =-=--==--=-=-=--=-=-=-=--=-=--==--=
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= Function =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 		std::cout << "reading line: " << rLine << std::endl;
 		int stopedAt = 0;
@@ -89,7 +90,7 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 			}
 		}
 
-		// =-=-=-=-=--=-=-=-=  ARGS  =-=-=-=--=-=-=--=
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=  ARGS  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 		int j = 0;
 		std::string _args;
@@ -133,7 +134,7 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 
 bool ScriptManager::SaveScript(const char* fileName, std::vector<ScriptManager::FileLine> framecalls)
 {
-	//TODO:
+	//TODO: Save all function calls inside the file
 	return false;
 }
 
@@ -155,8 +156,7 @@ void ScriptManager::CallFunction(std::string funcName, std::vector<std::string> 
 		}
 
 	}
-	//TODO: better way to show errors
-	std::cout << ">> ERROR: trying to call function that don't exist" << std::endl;
+	std::cout << ">> ERROR: trying to call function non existent function." << std::endl;
 }
 
 bool ForVectorComparisson(ScriptManager::FileLine& frame1, ScriptManager::FileLine& frame2) {
@@ -168,7 +168,7 @@ void ScriptManager::LoadScript(char* filename) {
 
 	std::vector<ScriptManager::FileLine> lines = LoadFile(filename);
 	if (lines.size() <= 0) {
-		std::cout << "no lines available in LoadScript" << std::endl;
+		std::cout << ">> ERROR: no lines available in LoadScript" << std::endl;
 		return;
 	}
 	//Sort just in case.
@@ -185,7 +185,6 @@ void ScriptManager::LoadScript(char* filename) {
 		found = false;
 		//check if the function name from the line exists inside the registered functions
 		for (FuncStruct x : functionsVector) {
-			std::cout << "comparando:" << lines[i].call << "| com:" << x.Name << std::endl;
 			if (lines[i].call.compare(x.Name)) {
 				found = true;
 				break;
@@ -214,6 +213,32 @@ void ScriptManager::LoadScript(char* filename) {
 			currentFrameCalls->frameNumber = lines[i + 1].frame;
 		}
 	}
+}
+
+bool ScriptManager::FileExists(char* filename)
+{
+	//TODO: if c++ 17+ be needed one day, remember to remove experimental since filesystem is part of c++ 18+.
+	return std::experimental::filesystem::exists(filename);
+}
+
+void ScriptManager::ReplaceFrameCallsFromList(FrameCall FrameCalls)
+{
+	bool alreadyExists = false;
+
+	//try finding if the framecall already exists for that frame.
+	for (FrameCall i : allFramesCalls) {
+		if (FrameCalls.frameNumber == i.frameNumber) 
+		{
+			//if it does, just replace all the calls.
+			alreadyExists = true;
+			i.calls = FrameCalls.calls;
+			break;
+		}
+	}
+	if (!alreadyExists) {
+		allFramesCalls.push_back(FrameCalls);
+	}
+
 }
 
 bool ScriptManager::GetFunctionsFromFrame(unsigned long frame, FrameCall* framecallStruct) {

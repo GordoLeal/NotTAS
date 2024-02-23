@@ -1,4 +1,5 @@
 #include <iostream>
+#include <Windows.h>
 #ifndef PROCESSACCESS_H
 #define PROCESSACCESS_H
 class ProcessAccess
