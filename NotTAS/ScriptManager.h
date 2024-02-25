@@ -64,7 +64,7 @@ public:
 	/// Read the file and set all the frames inside the FrameCalls struct.
 	/// </summary>
 	/// <param name="filename"></param>
-	void LoadScript(char* filename);
+	bool LoadScript(char* filename);
 
 	// =-=-=-=-=- Get and Set Frame CAlls =-==--=--=-=-
 	/// <summary>
@@ -86,7 +86,7 @@ public:
 	bool FunctionExist(std::string name);
 
 private:
-	std::vector<FileLine> LoadFile(const char* fileName);
+	bool LoadFile(const char* fileName, std::vector<FileLine> &lines);
 	ScriptManager() {};
 	std::vector<FuncStruct> functionsVector;
 	std::vector<FrameCall> allFramesCalls;

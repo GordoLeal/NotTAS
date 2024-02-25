@@ -14,20 +14,22 @@ System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Obje
 	MainLogic& ml = MainLogic::GetInstance();
 	if (ml.ScriptName.empty() || ml.ScriptName == "") {
 		std::cout << ">> ERROR: scriptname is empty, please write the name of a file in settings." << std::endl;
-		return System::Void();
+		return;
 	}
+
 	if (!ml.IsRunning()) {
 		std::cout << "Starting..." << std::endl;
-	ml.startingFrame = (int)numeric_StartFromFrame->Value;
+		std::cout << ml.ScriptName << std::endl;
+		ml.startingFrame = (int)numeric_StartFromFrame->Value;
 		ml.ExecuteScript((char*)ml.ScriptName.c_str());
-		Button_StartSystem->Text = gcnew String("Stop");
+		bWorker->RunWorkerAsync();
 	}
 	else
 	{
 		std::cout << "Stopping..." << std::endl;
 		ml.StopExecution();
-		Button_StartSystem->Text = gcnew String("Play");
 	}
+
 	return System::Void();
 }
 
@@ -42,7 +44,38 @@ System::Void NotTAS::Window_ControlPainel::Button_OpenSettings_Click(System::Obj
 
 System::Void NotTAS::Window_ControlPainel::numeric_StartFromFrame_ValueChanged(System::Object^ sender, System::EventArgs^ e)
 {
-	
+
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
+{
+	MainLogic& ml = MainLogic::GetInstance();
+	while (true) {
+		if (bWorker->CancellationPending) {
+			e->Cancel = true;
+			break;
+		}
+		bWorker->ReportProgress(1);
+		if (!ml.IsRunning()) {
+			bWorker->CancelAsync();
+		}
+		System::Threading::Thread::Sleep(100);
+	}
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::bWorker_ProgressChanged(System::Object^ sender, System::ComponentModel::ProgressChangedEventArgs^ e)
+{
+	std::cout << "testando3" << std::endl;
+	MainLogic& ml = MainLogic::GetInstance();
+	Button_StartSystem->Text = ml.IsRunning() ? gcnew String("Stop") : gcnew String("Play");
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::bWorker_WorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
+{
+	Button_StartSystem->Text = gcnew String("Play");
 	return System::Void();
 }
 

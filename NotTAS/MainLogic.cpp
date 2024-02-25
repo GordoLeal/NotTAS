@@ -7,26 +7,36 @@
 
 void MainLogic::ExecuteScript(char* fileName)
 {
+	//this looks ugly, but works... look away.
+	if (!_pa.SetGameHandle(AppExeName.c_str(), (char*)AppWindowName.c_str())) {
+		std::cout << ">> ERROR: could not set game handle and window name" << std::endl;
+		return;
+	}
+
 	if (!keepLooping) {
+		std::cout << "Loading script: " << fileName << std::endl;
+		if (!_sm.LoadScript(fileName))
+		{
+			std::cout << ">> ERROR: Script File don't exist, please create one or make sure is not a typo." << std::endl;
+			return;
+		};
+		std::cout << "Starting thread." << std::endl;
 		loopThread = std::thread(&MainLogic::ExecutionThread, this, fileName);
 	}
 	else
 	{
 		//Code Safety during development, in case the script get executed twice.
-		std::cout << "!! WARNING: Stopping script from Execute Script Function." << std::endl;
+		std::cout << "!! DEVELOPMENT WARNING: Stopping script from Execute Script Function." << std::endl;
 		StopExecution();
 	}
 }
 
-//Main Execution thread for reading the script and doing inputs
+/// <summary>
+/// Main Execution thread for reading the script and doing inputs
+/// </summary>
+/// <param name="filename"></param>
 void MainLogic::ExecutionThread(char* filename) {
-	if (_sm.FileExists(filename)) {
-		std::cout << ">> ERROR: Script File don't exist, please create one or make sure is not a typo." << std::endl;
-		return;
-	}
 	keepLooping = true;
-	std::cout << "Loading script: " << filename << std::endl;
-	_sm.LoadScript(filename);
 	currentFrame = 0;
 	while (keepLooping) {
 		printf("current frame: %lu \n", currentFrame);
@@ -35,11 +45,10 @@ void MainLogic::ExecutionThread(char* filename) {
 		Sleep(60.0 / 60.0); //TODO: divide by the game framerate.
 		currentFrame++;
 	}
-
 }
 
 /// <summary>
-/// check the loading status
+/// Check the level transition loading status
 /// </summary>
 void MainLogic::CheckLoad() {
 
@@ -48,8 +57,7 @@ void MainLogic::CheckLoad() {
 		std::vector<DWORD> offsets{ 0xA0 };
 		intptr_t loadAddress;
 		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
-		//bool didloadstart = false;
-		while (!isInLoad) {
+		while (!isInLoad && keepLooping) {
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
 			std::cout << "Waiting for load to start: " << isInLoad << std::endl;
 		}
@@ -60,17 +68,14 @@ void MainLogic::CheckLoad() {
 	//if we are waiting for load to end, make sure the load at least started.
 	if (WaitingLoadingToEnd && isInLoad) {
 		//TODO: Read values from a file or settings file
-		//std::vector<DWORD> offsets{ 0xA0 };
 		std::vector<DWORD> offsets{ 0x20,0x1D0 };
 		intptr_t loadAddress;
-		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
 		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03319550, offsets);
-		while (isInLoad) {
+		while (isInLoad && keepLooping) {
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
 			std::cout << "Waiting for load to end: " << isInLoad << std::endl;
 		}
 		WaitingLoadingToEnd = false;
-
 	}
 }
 
@@ -88,7 +93,6 @@ void MainLogic::ExecuteFrame(unsigned long frame)
 
 void MainLogic::StopExecution()
 {
-	printf("stopping thread");
 	keepLooping = false;
 	loopThread.detach();
 }

@@ -50,6 +50,8 @@ namespace NotTAS {
 
 	private: System::Windows::Forms::ToolTip^ toolTip1;
 	private: System::Windows::Forms::NumericUpDown^ numeric_StartFromFrame;
+	private: System::ComponentModel::BackgroundWorker^ bWorker;
+
 
 	private: System::ComponentModel::IContainer^ components;
 
@@ -74,6 +76,7 @@ namespace NotTAS {
 			this->checkBox_StartOnGameDetect = (gcnew System::Windows::Forms::CheckBox());
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->numeric_StartFromFrame = (gcnew System::Windows::Forms::NumericUpDown());
+			this->bWorker = (gcnew System::ComponentModel::BackgroundWorker());
 			Label_StartFromFrame = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numeric_StartFromFrame))->BeginInit();
 			this->SuspendLayout();
@@ -138,6 +141,14 @@ namespace NotTAS {
 			this->numeric_StartFromFrame->TabIndex = 11;
 			this->numeric_StartFromFrame->ValueChanged += gcnew System::EventHandler(this, &Window_ControlPainel::numeric_StartFromFrame_ValueChanged);
 			// 
+			// bWorker
+			// 
+			this->bWorker->WorkerReportsProgress = true;
+			this->bWorker->WorkerSupportsCancellation = true;
+			this->bWorker->DoWork += gcnew System::ComponentModel::DoWorkEventHandler(this, &Window_ControlPainel::bWorker_DoWork);
+			this->bWorker->ProgressChanged += gcnew System::ComponentModel::ProgressChangedEventHandler(this, &Window_ControlPainel::bWorker_ProgressChanged);
+			this->bWorker->RunWorkerCompleted += gcnew System::ComponentModel::RunWorkerCompletedEventHandler(this, &Window_ControlPainel::bWorker_WorkerCompleted);
+			// 
 			// Window_ControlPainel
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -162,5 +173,8 @@ namespace NotTAS {
 	private: System::Void Button_StartSystem_Click(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void Button_OpenSettings_Click(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void numeric_StartFromFrame_ValueChanged(System::Object^ sender, System::EventArgs^ e);
-};
+	private: System::Void bWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
+	private: System::Void bWorker_ProgressChanged(System::Object^ sender, System::ComponentModel::ProgressChangedEventArgs^ e);
+	private: System::Void bWorker_WorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
+	};
 }

@@ -2,21 +2,25 @@
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
-#include <experimental/filesystem>
 #include "ScriptManager.h"
 
 //Note: I could use Ellipsis for the parameters, but for the sake of sanity and consistency, i choose to stick with an static ammount.
 #define MAX_ARGS_SIZE 5
 
-// LoadScripts from file.
-// The line should be: TIMEFRAME function (args1, args2 ..., args5) \n
-// Max number of args is 5.
-std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filename) {
-	//TODO: make the LoadScript give a vector<FileLine> and set the return to be boolean or int, for error checking.
+/// <summary>
+/// LoadScripts from file.
+/// The line should be: TIMEFRAME function (args1, args2 ..., args5) \n
+/// Max number of args is 5.
+/// </summary>
+/// <param name="filename"></param>
+/// <param name="lines"></param>
+/// <returns></returns>
+bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::FileLine> &lines) {
 
 	std::fstream fileStream(filename);
 	if (!fileStream.is_open()) {
 		std::cout << ">> ERROR: script file don't exist." << std::endl;
+		return false;
 	}
 	std::string lineText;
 	unsigned int rLine = 0;
@@ -26,7 +30,6 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 	while (std::getline(fileStream, lineText))
 	{
 		rLine++;
-
 		if (lineText.empty())
 			continue;
 
@@ -34,6 +37,7 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 
 		if (lineText.at(0) == '!')
 			continue;
+
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= Frame number =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 		ScriptManager::FileLine frame;
 
@@ -43,19 +47,17 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 		if (posStartBracks == std::string::npos || posEndBracks == std::string::npos)
 		{
 			//TODO: better way to show errors
-			std::cout << ">> ERROR missing brackets in: " << rLine << std::endl;
+			std::cout << ">> ERROR: missing brackets in: " << rLine << std::endl;
 			continue;
 		}
 		std::string subtLine = lineText;
 		std::string a = subtLine.substr(posStartBracks + 1, (posEndBracks - posStartBracks) - 1);
 		try {
-			//frame.frame = stoul(subtLine.substr(posStartBracks + 1, (posEndBracks - posStartBracks) - 1));
 			frame.frame = std::stoull(a);
 		}
 		catch (std::out_of_range e) { //invalid int value
-			//TODO: better way to show errors
-			std::cout << ">> ERROR invalid frame number at: " << rLine << std::endl;
-			std::cout << a << std::endl;
+			std::cout << ">> ERROR: invalid frame number at: " << rLine << "|\""<< a << "\""<< std::endl;
+			continue;
 		}
 
 		lineText.erase(lineText.begin(), lineText.begin() + posEndBracks + 1);
@@ -71,7 +73,7 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 		if (posStartParentheses == std::string::npos || posEndParentheses == std::string::npos)
 		{
 			//TODO: better way to show errors
-			std::cout << ">> ERROR missing parentheses in: " << rLine << std::endl;
+			std::cout << ">> ERROR: missing parentheses in: " << rLine << std::endl;
 			continue;
 		}
 
@@ -110,12 +112,11 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 					if (j > MAX_ARGS_SIZE) {
 						//TODO: better way to show errors
 						std::cout << "wtf are you doing?" << std::endl;
-						std::cout << ">> ERROR way to much arguments" << rLine << std::endl; //better way to handle errors
+						std::cout << ">> ERROR: way to much arguments" << rLine << std::endl; //better way to handle errors
 					}
 					continue;
 				}
 				_args += lineC;
-				//std::cout << _args << std::endl;
 			}
 			else
 			{
@@ -129,7 +130,8 @@ std::vector<ScriptManager::FileLine> ScriptManager::LoadFile(const char* filenam
 	}
 
 	fileStream.close();
-	return outFrameCalls;
+	lines = outFrameCalls;
+	return true;
 }
 
 bool ScriptManager::SaveScript(const char* fileName, std::vector<ScriptManager::FileLine> framecalls)
@@ -156,7 +158,7 @@ void ScriptManager::CallFunction(std::string funcName, std::vector<std::string> 
 		}
 
 	}
-	std::cout << ">> ERROR: trying to call function non existent function." << std::endl;
+	std::cout << ">> ERROR: trying to call non existent function." << std::endl;
 }
 
 bool ForVectorComparisson(ScriptManager::FileLine& frame1, ScriptManager::FileLine& frame2) {
@@ -164,20 +166,26 @@ bool ForVectorComparisson(ScriptManager::FileLine& frame1, ScriptManager::FileLi
 }
 
 //Read the file and get all the frames inside the FrameCalls struct. Create a Vector with a FrameLine for each frame.
-void ScriptManager::LoadScript(char* filename) {
+bool ScriptManager::LoadScript(char* filename) {
 
-	std::vector<ScriptManager::FileLine> lines = LoadFile(filename);
+	std::vector<ScriptManager::FileLine> lines;
+	if (!LoadFile(filename, lines)) 
+	{
+		return false;
+	};
+
 	if (lines.size() <= 0) {
 		std::cout << ">> ERROR: no lines available in LoadScript" << std::endl;
-		return;
+		return false;
 	}
 	//Sort just in case.
 	sort(lines.begin(), lines.end(), ForVectorComparisson);
 	allFramesCalls.clear();
-	//Reserving memory 
+	//Reserving memory
 	FrameCall* currentFrameCalls = new FrameCall();
 	FrameFunction* ff = new FrameFunction();
 	ff->args.reserve(MAX_ARGS_SIZE);
+
 	bool found = false;
 	currentFrameCalls->frameNumber = lines[0].frame;
 	for (int i = 0; i < lines.size(); i++) {
@@ -213,12 +221,12 @@ void ScriptManager::LoadScript(char* filename) {
 			currentFrameCalls->frameNumber = lines[i + 1].frame;
 		}
 	}
+	return true;
 }
 
 bool ScriptManager::FileExists(char* filename)
 {
-	//TODO: if c++ 17+ be needed one day, remember to remove experimental since filesystem is part of c++ 18+.
-	return std::experimental::filesystem::exists(filename);
+	return std::filesystem::exists(filename);
 }
 
 void ScriptManager::ReplaceFrameCallsFromList(FrameCall FrameCalls)

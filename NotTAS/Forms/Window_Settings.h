@@ -104,7 +104,7 @@ namespace NotTAS {
 			this->textBox_AppWindowName->ReadOnly = true;
 			this->textBox_AppWindowName->Size = System::Drawing::Size(325, 20);
 			this->textBox_AppWindowName->TabIndex = 3;
-			this->textBox_AppWindowName->Text = L"Spongebob";
+			this->textBox_AppWindowName->Text = L"SpongeBob";
 			// 
 			// button_SaveExit
 			// 

@@ -30,8 +30,9 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 /// <param name="ExeName"></param>
 /// <param name="gameWindowName"></param>
 /// <returns></returns>
-bool ProcessAccess::SetGameHandle(const wchar_t ExeName[], char gameWindowName[])
+bool ProcessAccess::SetGameHandle(const wchar_t* ExeName, char* gameWindowName)
 {
+	std::wcout << "SetGameHandle:"<<ExeName << "|" << gameWindowName << std::endl;
 	int processID = FindProcbyName(ExeName);
 	ProcessAccess& pa = ProcessAccess::GetInstance();
 
@@ -53,9 +54,10 @@ bool ProcessAccess::SetGameHandle(const wchar_t ExeName[], char gameWindowName[]
 	SendToWind sba;
 	sba.name = gameWindowName;
 
-	if (!EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&sba)))
+	if (EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&sba)))
 	{
 		//TODO: do something if can't find window
+		std::cout << ">> ERROR: WINDOW COULD NOT BE FOUND!" << std::endl;
 	};
 
 	pa.gameWindowHwnd = sba.windowHandle;
@@ -76,8 +78,7 @@ void ProcessAccess::FocusOnGameWindow()
 {
 	ProcessAccess& pa = ProcessAccess::GetInstance();
 	if (pa.gameWindowHwnd == NULL) {
-		//TODO: better way to show this message to the user
-		std::cout << ">> ERROR: trying to call gameWindowHwnd without setting it first. please call SetGameHandle First." << std::endl;
+		std::cout << ">> DEVELOPER ERROR: trying to call gameWindowHwnd without setting it first. please call SetGameHandle First." << std::endl;
 		return;
 	}
 	SetForegroundWindow(pa.gameWindowHwnd);
@@ -85,8 +86,8 @@ void ProcessAccess::FocusOnGameWindow()
 
 //Find Process ID by Name
 int ProcessAccess::FindProcbyName(const wchar_t* name) {
-	PROCESSENTRY32 singleProcess; //hold process
-	singleProcess.dwSize = sizeof(PROCESSENTRY32);
+	PROCESSENTRY32W singleProcess; //hold process
+	singleProcess.dwSize = sizeof(PROCESSENTRY32W);
 	HANDLE h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0); //get all the process currently open in the system
 	if (GetLastError() == ERROR_ACCESS_DENIED) {
 		MessageBoxW(nullptr, L"ERROR TRYING TO GET SNAPSHOT (ACCESS DENIED)", L"ERROR", MB_OK);
@@ -94,7 +95,7 @@ int ProcessAccess::FindProcbyName(const wchar_t* name) {
 	}
 
 	do {
-		if (wcscmp(singleProcess.szExeFile, name) == 0) {
+		if (_wcsicmp(singleProcess.szExeFile, name) == 0) {
 			printf("FOUND Exe: %S \n", singleProcess.szExeFile);
 			DWORD processID = singleProcess.th32ProcessID;
 			CloseHandle(h);

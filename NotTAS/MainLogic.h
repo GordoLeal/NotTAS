@@ -32,7 +32,7 @@ public:
 		static MainLogic instance;
 		return instance;
 	}
-	std::string AppExeName;
+	std::wstring AppExeName;
 	std::string AppWindowName;
 	std::string ScriptName = "";
 	unsigned long startingFrame = 0;

@@ -1,0 +1,8 @@
+<0>showgame()
+<1>keyboard(f,pm_keydown)
+<5>keyboard(f,pm_keyup)
+<6>waitloadstart()
+<7>mouse(right,pm_keydown)
+<8>waitloadend()
+<180>mouse(right,pm_keyup)
+<181>stop()
