@@ -46,13 +46,11 @@ System::Void NotTAS::Window_Settings::button_SaveExit_Click(System::Object^ send
 	MarshalString(textBox_AppExe->Text, appExeName);
 	std::string appWindowName;
 	MarshalString(textBox_AppWindowName->Text, appWindowName);
-	std::string scriptfilename;
-	MarshalString(textBox_ScriptPath->Text, scriptfilename);
+
 
 	MainLogic& ml = MainLogic::GetInstance();
 	ml.AppExeName = appExeName;
 	ml.AppWindowName = appWindowName;
-	ml.ScriptName = scriptfilename;
 	this->Close();
 	return System::Void();
 }

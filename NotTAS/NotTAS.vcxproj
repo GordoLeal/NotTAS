@@ -143,7 +143,6 @@
     <ClCompile Include="Access\MemoryAccess.cpp" />
     <ClCompile Include="Access\ProcessAccess.cpp" />
     <ClCompile Include="Forms\Window_ControlPainel.cpp" />
-    <ClCompile Include="Forms\Window_Editor.cpp" />
     <ClCompile Include="Forms\Window_Settings.cpp" />
     <ClCompile Include="FuncInterpreter.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -156,9 +155,6 @@
     <ClInclude Include="Access\MemoryAccess.h" />
     <ClInclude Include="Access\ProcessAccess.h" />
     <ClInclude Include="Forms\Window_ControlPainel.h">
-      <FileType>CppForm</FileType>
-    </ClInclude>
-    <ClInclude Include="Forms\Window_Editor.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Forms\Window_Settings.h">
@@ -180,9 +176,6 @@
   <ItemGroup>
     <EmbeddedResource Include="Forms\Window_ControlPainel.resx">
       <DependentUpon>Forms\Window_ControlPainel.h</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Window_Editor.resx">
-      <DependentUpon>Forms\Window_Editor.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Window_Settings.resx">
       <DependentUpon>Forms\Window_Settings.h</DependentUpon>

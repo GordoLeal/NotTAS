@@ -3,6 +3,10 @@
 #include "MainWindow.h"
 #include "MainLogic.h"
 
+//  =-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//  =-=-=-=-=- DELETE =-=-=-=-=-
+//  -=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 //main window
 constexpr int MW_Widght = 350;
 constexpr int MW_Height = 200;

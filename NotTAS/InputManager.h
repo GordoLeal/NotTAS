@@ -92,10 +92,7 @@ public:
 private:
 	// Private constructor to prevent direct instantiation
 	InputManager() {}
-	//HANDLE gameHwnd = nullptr;
-	//HWND gameWindowHwnd = nullptr;
-	//InputManager() = default; 
-	~InputManager() = default;
+	InputManager(const InputManager&) = delete;
 };
 #endif 
 

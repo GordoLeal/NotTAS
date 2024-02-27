@@ -84,6 +84,8 @@ void MainLogic::ExecuteFrame(unsigned long frame)
 	ScriptManager::FrameCall currentFrameCalls;
 	if (_sm.GetFunctionsFromFrame(frame, &currentFrameCalls)) {
 		for (ScriptManager::FrameFunction i : currentFrameCalls.calls) {
+			if (i.funcNameA.at(0) == '!')
+				continue;
 			if (_sm.FunctionExist(i.funcNameA))
 				_sm.CallFunction(i.funcNameA, i.args);
 		}

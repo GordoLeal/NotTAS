@@ -238,7 +238,6 @@ InputManager::KeyEvents InputManager::ConvertToKeyEventHelper(std::string in)
 {
 	string keyEventString = ToLower(in);
 	InputManager::KeyEvents kEvent;
-	//Yanderer simulator dev, but it works and switch in c++ is just stupid to work with strings, so a bunch of if-else it is.
 	if (keyEventString == "pm_keydown") { kEvent = InputManager::KeyEvents::PM_KeyDown; }
 	else if (keyEventString == "pm_keyup") { kEvent = InputManager::KeyEvents::PM_KeyUp; }
 	else if (keyEventString == "si_keydown") { kEvent = InputManager::KeyEvents::SI_KeyDown; }

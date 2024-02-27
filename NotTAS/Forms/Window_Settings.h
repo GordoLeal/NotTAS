@@ -35,7 +35,7 @@ namespace NotTAS {
 	private: System::Windows::Forms::TextBox^ textBox_AppExe;
 	private: System::Windows::Forms::TextBox^ textBox_AppWindowName;
 	private: System::Windows::Forms::Button^ button_SaveExit;
-	private: System::Windows::Forms::TextBox^ textBox_ScriptPath;
+
 	private:
 		/// <summary>
 		/// Required designer variable.
@@ -51,14 +51,11 @@ namespace NotTAS {
 		{
 			System::Windows::Forms::Label^ label1;
 			System::Windows::Forms::Label^ label2;
-			System::Windows::Forms::Label^ PathLabel;
 			this->textBox_AppExe = (gcnew System::Windows::Forms::TextBox());
 			this->textBox_AppWindowName = (gcnew System::Windows::Forms::TextBox());
 			this->button_SaveExit = (gcnew System::Windows::Forms::Button());
-			this->textBox_ScriptPath = (gcnew System::Windows::Forms::TextBox());
 			label1 = (gcnew System::Windows::Forms::Label());
 			label2 = (gcnew System::Windows::Forms::Label());
-			PathLabel = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// label1
@@ -78,15 +75,6 @@ namespace NotTAS {
 			label2->Size = System::Drawing::Size(77, 13);
 			label2->TabIndex = 2;
 			label2->Text = L"Window Name";
-			// 
-			// PathLabel
-			// 
-			PathLabel->AutoSize = true;
-			PathLabel->Location = System::Drawing::Point(9, 110);
-			PathLabel->Name = L"PathLabel";
-			PathLabel->Size = System::Drawing::Size(152, 13);
-			PathLabel->TabIndex = 7;
-			PathLabel->Text = L"Script File Name [ example.txt ]";
 			// 
 			// textBox_AppExe
 			// 
@@ -108,7 +96,7 @@ namespace NotTAS {
 			// 
 			// button_SaveExit
 			// 
-			this->button_SaveExit->Location = System::Drawing::Point(239, 165);
+			this->button_SaveExit->Location = System::Drawing::Point(239, 113);
 			this->button_SaveExit->Name = L"button_SaveExit";
 			this->button_SaveExit->Size = System::Drawing::Size(98, 23);
 			this->button_SaveExit->TabIndex = 5;
@@ -116,21 +104,11 @@ namespace NotTAS {
 			this->button_SaveExit->UseVisualStyleBackColor = true;
 			this->button_SaveExit->Click += gcnew System::EventHandler(this, &Window_Settings::button_SaveExit_Click);
 			// 
-			// textBox_ScriptPath
-			// 
-			this->textBox_ScriptPath->Location = System::Drawing::Point(12, 126);
-			this->textBox_ScriptPath->Name = L"textBox_ScriptPath";
-			this->textBox_ScriptPath->Size = System::Drawing::Size(325, 20);
-			this->textBox_ScriptPath->TabIndex = 6;
-			this->textBox_ScriptPath->TextChanged += gcnew System::EventHandler(this, &Window_Settings::textBox_ScriptPath_TextChanged);
-			// 
 			// Window_Settings
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(349, 204);
-			this->Controls->Add(PathLabel);
-			this->Controls->Add(this->textBox_ScriptPath);
+			this->ClientSize = System::Drawing::Size(349, 150);
 			this->Controls->Add(this->button_SaveExit);
 			this->Controls->Add(this->textBox_AppWindowName);
 			this->Controls->Add(label2);

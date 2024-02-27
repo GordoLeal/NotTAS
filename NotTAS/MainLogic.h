@@ -17,6 +17,7 @@ class MainLogic
 private:
 	MainLogic() {};
 	std::thread loopThread;
+	MainLogic(const MainLogic&) = delete;
 	bool keepLooping = false;
 	unsigned long currentFrame = 0;
 	void ExecutionThread(char* filename);

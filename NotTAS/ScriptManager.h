@@ -23,6 +23,7 @@ public:
 		static ScriptManager instance;
 		return instance;
 	}
+	
 
 	// =-= Registering the function =-=
 	struct FuncStruct
@@ -48,7 +49,7 @@ public:
 	/// <param name="fileName"></param>
 	/// <param name="fileLine"></param>
 	/// <returns></returns>
-	bool SaveScript(const char* fileName, std::vector<FileLine> fileLine);
+	bool SaveScript(const char* fileName);
 	
 	/// <summary>
 	/// add a function to the list of functions that can be loaded by a script
@@ -66,17 +67,30 @@ public:
 	/// <param name="filename"></param>
 	bool LoadScript(char* filename);
 
-	// =-=-=-=-=- Get and Set Frame CAlls =-==--=--=-=-
 	/// <summary>
 	/// return all function calls from a frame.
 	/// </summary>
 	bool GetFunctionsFromFrame(unsigned long frame, FrameCall* framestruct);
+
+	/// <summary>
+	/// adds a function name + args to a frame time.
+	/// 
+	/// returns true if frame already exists.
+	/// returns false if had to create a new frame to introduce the function.
+	/// </summary> 
+	bool AddFunctionToFrame(unsigned int frame, FrameFunction function);
+
+	/// <summary>
+	/// Removes the first instance on the frame that matches struct.
+	/// </summary>
+	bool RemoveFunctionFromframe(unsigned int frame, FrameFunction function);
+
 	/// <summary>
 	/// Replaces (or add if is non existent) all the calls from a framecall to a frame.
 	/// </summary>
 	void ReplaceFrameCallsFromList(FrameCall FrameCalls);
-	//-0-0-0-0-0-0-0-0-0-0-0-0-0-
-
+	
+	void GetFramesNumberList(std::vector<unsigned int>* list);
 	/// <summary>
 	/// Check if file exists
 	/// </summary>
@@ -88,6 +102,7 @@ public:
 private:
 	bool LoadFile(const char* fileName, std::vector<FileLine> &lines);
 	ScriptManager() {};
+	ScriptManager(const ScriptManager&) = delete;
 	std::vector<FuncStruct> functionsVector;
 	std::vector<FrameCall> allFramesCalls;
 };

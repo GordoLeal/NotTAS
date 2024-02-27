@@ -6,17 +6,9 @@ using namespace System::Windows::Forms;
 using namespace NotTAS;
 
 int main() {
-
+	MainLogic::GetInstance().InitialSetup();
 	Window_ControlPainel cp;
 	Application::EnableVisualStyles();
 	Application::Run(%cp);
-	//bool KeepLooping = true;
-	//MainWindow* mWindow = new MainWindow();
-	/*while (KeepLooping) {
-		if (mWindow->IsApplicationCloseRequest()) {
-			KeepLooping = false;
-		}
-	}*/
-	//delete mWindow;
 	return 0;
 }
