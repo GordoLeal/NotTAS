@@ -20,7 +20,7 @@ private:
 	MainLogic(const MainLogic&) = delete;
 	bool keepLooping = false;
 	unsigned long currentFrame = 0;
-	void ExecutionThread(char* filename);
+	void ExecutionThread();
 	void ExecuteFrame(unsigned long frame);
 	ScriptManager& _sm = ScriptManager::GetInstance();
 	InputManager& _inm = InputManager::GetInstance();
@@ -51,7 +51,7 @@ public:
 	bool IsRunning();
 	unsigned long GetCurrentFrame();
 
-	void ExecuteScript(char* fileName);
+	void ExecuteScript();
 };
 #endif // !MAINLOGIC_H
 

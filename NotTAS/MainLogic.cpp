@@ -5,28 +5,28 @@
 #include "FuncInterpreter.h"
 #include "Access/MemoryAccess.h"
 
-void MainLogic::ExecuteScript(char* fileName)
+void MainLogic::ExecuteScript()
 {
-	//this looks ugly, but works... look away.
 	if (!_pa.SetGameHandle(AppExeName.c_str(), (char*)AppWindowName.c_str())) {
-		std::cout << ">> ERROR: could not set game handle and window name" << std::endl;
+		std::cout << ">> [ExecuteScript-log] ERROR: could not set game handle and window name" << std::endl;
 		return;
 	}
 
 	if (!keepLooping) {
-		std::cout << "Loading script: " << fileName << std::endl;
-		if (!_sm.LoadScript(fileName))
-		{
-			std::cout << ">> ERROR: Script File don't exist, please create one or make sure is not a typo." << std::endl;
-			return;
-		};
-		std::cout << "Starting thread." << std::endl;
-		loopThread = std::thread(&MainLogic::ExecutionThread, this, fileName);
+		//We are removing file loading to convert to only the internal loading.
+		//std::cout << "Loading script: " << fileName << std::endl;
+		//if (!_sm.LoadScript(fileName))
+		//{
+		//	std::cout << ">> ERROR: Script File don't exist, please create one or make sure is not a typo." << std::endl;
+		//	return;
+		//};
+		std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
+		loopThread = std::thread(&MainLogic::ExecutionThread, this);
 	}
 	else
 	{
 		//Code Safety during development, in case the script get executed twice.
-		std::cout << "!! DEVELOPMENT WARNING: Stopping script from Execute Script Function." << std::endl;
+		std::cout << "!! [ExecuteScript-log] DEVELOPMENT WARNING: Stopping script from Execute Script Function." << std::endl;
 		StopExecution();
 	}
 }
@@ -35,11 +35,11 @@ void MainLogic::ExecuteScript(char* fileName)
 /// Main Execution thread for reading the script and doing inputs
 /// </summary>
 /// <param name="filename"></param>
-void MainLogic::ExecutionThread(char* filename) {
+void MainLogic::ExecutionThread() {
 	keepLooping = true;
 	currentFrame = 0;
 	while (keepLooping) {
-		printf("current frame: %lu \n", currentFrame);
+		printf("[ExecutionThread-log] current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
 		CheckLoad();
 		Sleep(60.0 / 60.0); //TODO: divide by the game framerate.

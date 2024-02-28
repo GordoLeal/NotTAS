@@ -76,23 +76,22 @@ void Window_ControlPainel::UpdateCurrentEditingFrameTextbox() {
 
 System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Object^ sender, System::EventArgs^ e)
 {
-	// Play button
-	//MainLogic& ml = MainLogic::GetInstance();
-	if (_ml.ScriptName.empty() || _ml.ScriptName == "") {
-		std::cout << ">> ERROR: scriptname is empty, please load a file." << std::endl;
-		return;
-	}
+	//// Play button
+	//if (_ml.ScriptName.empty() || _ml.ScriptName == "") {
+	//	std::cout << ">> [StartSystem-log] ERROR: scriptname is empty, please load a file." << std::endl;
+	//	return;
+	//}
 
 	if (!_ml.IsRunning()) {
-		std::cout << "Starting..." << std::endl;
+		std::cout << "[StartSystem-log] Starting..." << std::endl;
 		std::cout << _ml.ScriptName << std::endl;
 		_ml.startingFrame = (int)numeric_StartFromFrame->Value;
-		_ml.ExecuteScript((char*)_ml.ScriptName.c_str());
+		_ml.ExecuteScript();
 		bWorker->RunWorkerAsync();
 	}
 	else
 	{
-		std::cout << "Stopping..." << std::endl;
+		std::cout << "[StartSystem-log] Stopping..." << std::endl;
 		_ml.StopExecution();
 	}
 
@@ -111,7 +110,6 @@ System::Void NotTAS::Window_ControlPainel::Button_OpenSettings_Click(System::Obj
 System::Void NotTAS::Window_ControlPainel::numeric_StartFromFrame_ValueChanged(System::Object^ sender, System::EventArgs^ e)
 {
 	// Start From Frame value
-	std::cout << (unsigned int)numeric_StartFromFrame->Value << "aaaaas" << std::endl;
 	_ml.startingFrame = (unsigned int)numeric_StartFromFrame->Value;
 	return System::Void();
 }
@@ -159,7 +157,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddKeyboardKey_Click(System::O
 	MarshalString(comboBox_KB_InputType->Text, fFunction.args[1]);
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddKeyboardKey-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -247,7 +245,7 @@ static ScriptManager::FrameFunction TransformStringIntoFunction(std::string in) 
 
 System::Void NotTAS::Window_ControlPainel::button_DeleteInput_Click(System::Object^ sender, System::EventArgs^ e)
 {
-	if (listBox_EditingFrame->SelectedItem != NULL) {
+	if (listBox_EditingFrame->SelectedIndex > -1) {
 		int i = (int)(listBox_EditingFrame->SelectedIndex);
 		unsigned int frame = (unsigned int)numUD_EditingFrame->Value; // <- tongue possible crash, need more investigation.
 		std::string selecteditemstr;
