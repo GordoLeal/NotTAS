@@ -1,1 +1,2 @@
 <1>keyboard(f,pm_keydown)
+<0>showgame()

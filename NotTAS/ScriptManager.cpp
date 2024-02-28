@@ -273,13 +273,17 @@ void ScriptManager::ReplaceFrameCallsFromList(FrameCall FrameCalls)
 }
 
 bool ScriptManager::GetFunctionsFromFrame(unsigned long frame, FrameCall* framecallStruct) {
+	std::cout << "[log] GetFunctionFromFrame: on frame: " << frame << std::endl;
 	for (int i = 0; i < allFramesCalls.size(); i++) {
 		if (allFramesCalls[i].frameNumber != frame) {
+			std::cout << "[log] delete: not found in frame: " << allFramesCalls[i].frameNumber << std::endl;
 			continue;
 		}
+		std::cout << "[log] GetFunctionFromFrame: found at frame: " << allFramesCalls[i].frameNumber << std::endl;
 		*framecallStruct = allFramesCalls[i];
 		return true;
 	}
+	std::cout << "[log] GetFunctionFromFrame: AllFramesCalls.size: " << allFramesCalls.size() << std::endl;
 	return false;
 }
 
@@ -290,12 +294,15 @@ bool ScriptManager::AddFunctionToFrame(unsigned int frame, FrameFunction functio
 		allFramesCalls[i].calls.push_back(function);
 		return true;
 	}
+	std::cout << "[log] AddFunctionToFrame: Creating new FrameCalls for: " << function.funcNameA << std::endl;
+	std::cout << "[log] AddFunctionToFrame: old allframecalls size: " << allFramesCalls.size() << std::endl;
+
 	//frame don't exist, create a new one.
 	FrameCall frameNew;
 	frameNew.frameNumber = frame;
 	frameNew.calls.push_back(function);
 	allFramesCalls.push_back(frameNew);
-	//return false if had to create a new one.
+	std::cout << "[log] AddFunctionToFrame: to new: " << allFramesCalls.size() << std::endl;
 	return false;
 }
 
@@ -308,34 +315,37 @@ bool ScriptManager::RemoveFunctionFromframe(unsigned int frame, FrameFunction fu
 		for (int j = 0; j < frameCalls.size(); j++) {
 			if (frameCalls[j].funcNameA == function.funcNameA) { //find the function name.
 				if (function.funcNameA.at(0) == '!') {
-
 					if (allFramesCalls[i].calls.size() <= 1)
 						allFramesCalls.erase(allFramesCalls.begin() + i);
 					else
 						allFramesCalls[i].calls.erase(allFramesCalls[i].calls.begin() + j);
 					return true;
 				}
-
-				if (frameCalls[j].args.size() != function.args.size()) //check if the size is the same.
+				
+				if (frameCalls[j].args.size() != function.args.size()) //check if the size is the same.[
+				{
 					break;
-				bool found = false;
-				for (int z = 0; z < function.args.size(); z++) { //check all the args and if they are the same.
-					if (frameCalls[j].args[z] != function.args[z]) {
-						found = false;
-						break;
+				}
+
+				if (function.args.size() > 0) {
+					bool isEqual = true;
+					for (int z = 0; z < function.args.size(); z++) { //check all the args and if they are the same.
+						if (frameCalls[j].args[z] != function.args[z]) {
+							isEqual = false;
+							break;
+						}
 					}
-					found = true;
+					if (!isEqual) // if is not, go to the next function
+						break;
 				}
 
-				if (found) {
-					//if we are going to delete the only available function just delete the framecall so we don't get memory leak.
-					if (allFramesCalls[i].calls.size() <= 1)
-						allFramesCalls.erase(allFramesCalls.begin() + i);
-					else
-						allFramesCalls[i].calls.erase(allFramesCalls[i].calls.begin() + j);
+				//if we are going to delete the only available function just delete the framecall so we don't get memory leak.
+				if (allFramesCalls[i].calls.size() == 1)
+					allFramesCalls.erase(allFramesCalls.begin() + i);
+				else
+					allFramesCalls[i].calls.erase(allFramesCalls[i].calls.begin() + j);
 
-					return true;
-				}
+				return true;
 			}
 		}
 	}

@@ -30,6 +30,7 @@ void InputManager::AddKeyboardInput(char key, KeyEvents inEvent)
 		outInputArr.type = INPUT_KEYBOARD;
 		outInputArr.ki.wVk = KeyCode;
 		outInputArr.ki.dwFlags = inEvent;
+		outInputArr.ki.time = 0;
 		outInputArr.ki.dwExtraInfo = GetMessageExtraInfo(); //No idea what this does, but MSDN said it is required.
 		outStruct.siInput = outInputArr;
 		break;
@@ -57,6 +58,7 @@ void InputManager::AddSpecialKeyboardInput(SpecialKeyboardInputs key, KeyEvents 
 		outInputArr.ki.wVk = key;
 		outInputArr.ki.dwFlags = inEvent;
 		outInputArr.ki.dwExtraInfo = GetMessageExtraInfo(); //No idea what this does, but MSDN said it is required.
+		outInputArr.ki.time = 0;
 		outStruct.siInput = outInputArr;
 		break;
 	}
@@ -217,7 +219,7 @@ void InputManager::SendSavedInputs()
 
 		int erroRet = SendInput(sizeof(arrOutInput), arrOutInput.data(), sizeof(INPUT));
 		if (erroRet == 0) {
-			cout << ">> ERROR SENDING Move Mouse INPUT via SI: " << GetLastError() << endl;
+			cout << ">> ERROR: tring to send Move Mouse INPUT via SI, error code: " << GetLastError() << endl;
 		}
 	}
 	arrOutInput.clear();

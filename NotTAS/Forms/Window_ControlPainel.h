@@ -114,9 +114,10 @@ namespace NotTAS {
 			System::Windows::Forms::Label^ label3;
 			System::Windows::Forms::Label^ label2;
 			System::Windows::Forms::GroupBox^ groupBox_SaveLoadFile;
+			System::Windows::Forms::Label^ label_txt;
 			System::Windows::Forms::Label^ label8;
 			System::Windows::Forms::GroupBox^ groupBox_InputsList;
-			System::Windows::Forms::Label^ label_txt;
+			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Window_ControlPainel::typeid));
 			this->groupBox_Comment = (gcnew System::Windows::Forms::GroupBox());
 			this->button_AddComment = (gcnew System::Windows::Forms::Button());
 			this->textBox_Comment = (gcnew System::Windows::Forms::TextBox());
@@ -171,9 +172,9 @@ namespace NotTAS {
 			label3 = (gcnew System::Windows::Forms::Label());
 			label2 = (gcnew System::Windows::Forms::Label());
 			groupBox_SaveLoadFile = (gcnew System::Windows::Forms::GroupBox());
+			label_txt = (gcnew System::Windows::Forms::Label());
 			label8 = (gcnew System::Windows::Forms::Label());
 			groupBox_InputsList = (gcnew System::Windows::Forms::GroupBox());
-			label_txt = (gcnew System::Windows::Forms::Label());
 			groupBox_AddInput->SuspendLayout();
 			this->groupBox_Comment->SuspendLayout();
 			this->groupBox_SetFPS->SuspendLayout();
@@ -626,6 +627,15 @@ namespace NotTAS {
 			groupBox_SaveLoadFile->TabStop = false;
 			groupBox_SaveLoadFile->Text = L"Save / Load";
 			// 
+			// label_txt
+			// 
+			label_txt->AutoSize = true;
+			label_txt->Location = System::Drawing::Point(223, 22);
+			label_txt->Name = L"label_txt";
+			label_txt->Size = System::Drawing::Size(21, 13);
+			label_txt->TabIndex = 20;
+			label_txt->Text = L".txt";
+			// 
 			// label8
 			// 
 			label8->AutoSize = true;
@@ -772,15 +782,6 @@ namespace NotTAS {
 			this->bWorker->DoWork += gcnew System::ComponentModel::DoWorkEventHandler(this, &Window_ControlPainel::bWorker_DoWork);
 			this->bWorker->ProgressChanged += gcnew System::ComponentModel::ProgressChangedEventHandler(this, &Window_ControlPainel::bWorker_ProgressChanged);
 			this->bWorker->RunWorkerCompleted += gcnew System::ComponentModel::RunWorkerCompletedEventHandler(this, &Window_ControlPainel::bWorker_WorkerCompleted);
-			// 
-			// label_txt
-			// 
-			label_txt->AutoSize = true;
-			label_txt->Location = System::Drawing::Point(223, 22);
-			label_txt->Name = L"label_txt";
-			label_txt->Size = System::Drawing::Size(21, 13);
-			label_txt->TabIndex = 20;
-			label_txt->Text = L".txt";
 			// 
 			// Window_ControlPainel
 			// 

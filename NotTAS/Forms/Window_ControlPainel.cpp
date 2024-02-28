@@ -24,14 +24,15 @@ static void MarshalString(System::String^ s, std::string& os) {
 
 void Window_ControlPainel::AddFunction(ScriptManager::FrameFunction fFunction) {
 	//ScriptManager& sm = ScriptManager::GetInstance();
-	_sm.AddFunctionToFrame((unsigned int)numUD_EditingFrame->Value, fFunction);
+	if (_sm.AddFunctionToFrame((unsigned int)numUD_EditingFrame->Value, fFunction)) {
+		std::cout << "[1] AddFunction: + " << fFunction.funcNameA << " to frame: " << (unsigned int)numUD_EditingFrame->Value << std::endl;
+	}
 	UpdateCurrentEditingFrameTextbox();
 }
 
 void Window_ControlPainel::UpdateCurrentEditingFrameTextbox() {
 	listBox_EditingFrame->Items->Clear();
 	//ScriptManager& sm = ScriptManager::GetInstance();
-	//MainLogic::GetInstance().LoadTASSCript();
 	ScriptManager::FrameCall frCalls;
 	_sm.GetFunctionsFromFrame((unsigned int)numUD_EditingFrame->Value, &frCalls);
 	for (ScriptManager::FrameFunction i : frCalls.calls) {
@@ -42,18 +43,18 @@ void Window_ControlPainel::UpdateCurrentEditingFrameTextbox() {
 			continue;
 		}
 		buf += i.funcNameA + "(";
+		std::cout << "[log] UpdateCurrentEditingFrame:(" << i.funcNameA << ") have: (" << i.args.size() << ") args." << std::endl;
 		for (int j = 0; j < i.args.size(); j++) {
-			if (i.args[j].size() <= 0)
+			if (i.args[j].size() <= 0) {
+				std::cout << "[!] UpdateCurrentEditingFrame:" << i.funcNameA << " don't have value in arg:" << j << std::endl;
 				continue;
+			}
 			buf += i.args[j];
-
-			if (j + 1 <= i.args.size())
+			std::cout << "[log] UpdateCurrentEditingFrame:(" << i.funcNameA << ") adding arg: (" << i.args[j] << ") at:" << j << std::endl;
+			if (j + 1 < i.args.size())
 				if (i.args[j + 1].length() > 0) {
 					buf += ",";
 				}
-			/*if (j + 1 < i.args.size()) {
-				buf += ",";
-			}*/
 		}
 		buf += ")";
 		listBox_EditingFrame->Items->Add(gcnew String(buf.data()));
@@ -173,7 +174,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddKeyboardKey_Click(System::O
 
 System::Void NotTAS::Window_ControlPainel::button_AddKeyboardSpecialKey_Click(System::Object^ sender, System::EventArgs^ e)
 {
-	if (textBox_KB_Key->Text == "" || comboBox_KB_InputType->Text == "") {
+	if (comboBox_KB_SpecialKey->Text == "" || comboBox_KB_InputType->Text == "") {
 		MessageBoxA(nullptr, "Missing a few settings", "Error", MB_OK);
 		return System::Void();
 	}
@@ -198,19 +199,100 @@ System::Void NotTAS::Window_ControlPainel::button_AddKeyboardSpecialKey_Click(Sy
 	return System::Void();
 }
 
+/// <summary>
+/// Takes a string with func name and args inside parenthesis and turns it into a ScriptManager::sfunction struct.
+/// 
+/// probably will be moved to the scriptmanager.h
+/// </summary>
+/// <param name="in"></param>
+/// <returns></returns>
+static ScriptManager::FrameFunction TransformStringIntoFunction(std::string in) {
+	ScriptManager::FrameFunction f;
+	if (in.at(0) == '!') { //if is a comment just add it to funcname
+		f.funcNameA = in;
+		return f;
+	}
+	size_t pS = in.find('(');
+	size_t pE = in.find(')');
+	if (pE != pS + 1) // if is a parenthesis right after the other there's no args in the list.
+	{
+		int j = 0;
+		std::string _args;
+		for (int i = pS + 1; i < in.size(); i++) {
+			char c = in[i];
+			if (c != ')') {
+				if (c == ' ') {
+					continue;
+				}
+				if (c == ',')
+				{
+					f.args.push_back(_args);
+					_args.clear();
+					j++;
+					continue;
+				}
+				_args += c;
+			}
+			else
+			{
+				f.args.push_back(_args);
+				break;
+			}
+		}
+	}
+	in.erase(in.begin() + pS, in.end());
+	f.funcNameA = in;
+	return f;
+}
+
 System::Void NotTAS::Window_ControlPainel::button_DeleteInput_Click(System::Object^ sender, System::EventArgs^ e)
 {
 	if (listBox_EditingFrame->SelectedItem != NULL) {
-		int i = (int)listBox_EditingFrame->SelectedIndex;
-		if (i < 0) {
-			return System::Void();
-		}
-		unsigned int frame = (unsigned int)numUD_EditingFrame->Value;
+		int i = (int)(listBox_EditingFrame->SelectedIndex);
+		unsigned int frame = (unsigned int)numUD_EditingFrame->Value; // <- tongue possible crash, need more investigation.
+		std::string selecteditemstr;
+		MarshalString(listBox_EditingFrame->SelectedItem->ToString(), selecteditemstr);
 		ScriptManager::FrameCall fCall;
 		_sm.GetFunctionsFromFrame(frame, &fCall);
-		if (!_sm.RemoveFunctionFromframe(frame, fCall.calls[i])) {
-			std::cout << ">> ERROR: could not delete input" << std::endl;
+		ScriptManager::FrameFunction selectedFunction = TransformStringIntoFunction(selecteditemstr);
+		std::cout << "[DeleteButton-log] trying to delete at: " << frame << "function translated:" << selectedFunction.funcNameA << std::endl;
+
+		for (ScriptManager::FrameFunction i : fCall.calls)
+		{
+			std::cout << "[DeleteButton-log]" << selectedFunction.funcNameA << "?" << i.funcNameA << std::endl;
+			std::cout << "[DeleteButton-log]" << selectedFunction.args.size() << "!" << i.args.size() << std::endl;
+			if (selectedFunction.funcNameA == i.funcNameA && selectedFunction.args.size() == i.args.size())
+			{
+				std::cout << "[DeleteButton-log] found function" << std::endl;
+				if (selectedFunction.args.size() > 0)
+				{
+					bool allMatch = true;
+					for (int a = 0; a < i.args.size(); a++)
+					{
+						if (selectedFunction.args[a] != i.args[a])
+						{
+							allMatch = false;
+							break;
+						}
+					}
+					//if any argument don't match, then, this is not the function we want to delete. keep looking.
+					if (!allMatch)
+						continue;
+				}
+
+				if (_sm.RemoveFunctionFromframe(frame, i))
+				{
+					std::cout << "[DeleteButton-log] function deleted with sucess: " << frame << std::endl;
+				}
+				else
+				{
+					std::cout << ">> [DeleteButton-log] ERROR: could not delete input at: " << frame << std::endl;
+				}
+				break;
+
+			}
 		}
+		std::cout << "[log] End Delete"<< std::endl;
 		UpdateCurrentEditingFrameTextbox();
 	}
 	return System::Void();
@@ -438,7 +520,7 @@ System::Void NotTAS::Window_ControlPainel::listBox_FramesNumber_SelectedIndexCha
 		numUD_EditingFrame->Value = std::stoi(a);
 		UpdateCurrentEditingFrameTextbox();
 	}
-	
+
 	return System::Void();
 }
 

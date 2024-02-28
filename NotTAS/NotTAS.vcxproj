@@ -163,6 +163,7 @@
     <ClInclude Include="FuncInterpreter.h" />
     <ClInclude Include="MainLogic.h" />
     <ClInclude Include="MainWindow.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="InputManager.h" />
   </ItemGroup>
@@ -180,6 +181,12 @@
     <EmbeddedResource Include="Forms\Window_Settings.resx">
       <DependentUpon>Forms\Window_Settings.h</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="NotTAS.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\NotTAS.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
