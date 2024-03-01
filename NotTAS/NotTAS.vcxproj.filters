@@ -87,7 +87,7 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\NotTAS.png">
+    <Image Include="C:\Users\pedro\OneDrive\Imagens\NotTAS.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

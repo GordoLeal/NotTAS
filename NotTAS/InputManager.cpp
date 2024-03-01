@@ -3,6 +3,9 @@
 
 using namespace std;
 
+InputManager& inM = InputManager::GetInstance();
+ProcessAccess& pa = ProcessAccess::GetInstance();
+
 // -=-=--=--=-=-=-=-=-=-=-=-=-=-=-== ADDING INPUTS TO THE LIST =-=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=--=-=--=-=--=
 
 // >>> KEYBOARD
@@ -62,7 +65,7 @@ void InputManager::AddSpecialKeyboardInput(SpecialKeyboardInputs key, KeyEvents 
 		outStruct.siInput = outInputArr;
 		break;
 	}
-	InputManager& inM = InputManager::GetInstance();
+	//InputManager& inM = InputManager::GetInstance();
 	inM.inputsVector.push_back(outStruct);
 }
 
@@ -137,12 +140,13 @@ void InputManager::AddMouseMoveInput(int x, int y, InputManager::KeyEvents inEve
 		break;
 	case SI_MoveMouse:
 		outStruct.siInput.type = INPUT_MOUSE;
-		outStruct.siInput.mi.dx = (LONG)x;
-		outStruct.siInput.mi.dy = (LONG)y;
+		outStruct.siInput.mi.dx = x;
+		outStruct.siInput.mi.dy = y;
 		outStruct.siInput.mi.mouseData = 0;
 		outStruct.siInput.mi.dwFlags = MOUSEEVENTF_MOVE;
 		outStruct.siInput.mi.time = 0; //if is 0 the user system does the job of giving the correct time.
-		outStruct.siInput.mi.dwExtraInfo = GetMessageExtraInfo(); //No idea what this does, but MSDN said it is required.
+		//outStruct.siInput.mi.time = GetTickCount64(); //if is 0 the user system does the job of giving the correct time.
+		//outStruct.siInput.mi.dwExtraInfo = GetMessageExtraInfo(); //No idea what this does, but MSDN said it is required.
 		break;
 	}
 	InputManager& inM = InputManager::GetInstance();
@@ -160,7 +164,6 @@ void InputManager::AddMouseMoveInput(int x, int y, InputManager::KeyEvents inEve
 /// <param name="key"></param>
 /// <returns></returns>
 BOOL SendInputMessageToApp(HWND handle, UINT type, BYTE key) {
-	//std::cout << "dentro do thread" << handle << " | type: " << type << "| key: " << key << std::endl;
 	bool teste = PostMessageW(handle, type, key, 0);
 	if (!teste) {
 		DWORD errorMessageID = GetLastError();
@@ -170,7 +173,6 @@ BOOL SendInputMessageToApp(HWND handle, UINT type, BYTE key) {
 }
 
 BOOL SendMouseMoveMessageToApp(HWND handle, UINT type, int x, int y) {
-	//std::cout << "dentro do thread" << handle << " | type: " << type << "| key: " << key << std::endl;
 	bool teste = PostMessageW(handle, type, 0, MAKELPARAM(x, y));
 	if (!teste) {
 		DWORD errorMessageID = GetLastError();
@@ -184,14 +186,9 @@ BOOL SendMouseMoveMessageToApp(HWND handle, UINT type, int x, int y) {
 //Send all the inputs from the vector list and empty it.
 void InputManager::SendSavedInputs()
 {
-	InputManager& inM = InputManager::GetInstance();
-	ProcessAccess& pa = ProcessAccess::GetInstance();
-	
-	//this way of sending inputs one by one via sendinput is not ideal for the way sendinput works.
 	vector<INPUT> arrOutInput;
 	for (InputStruct i : inM.inputsVector)
 	{
-		//why not switch? because of the variables of the async call. this would generate a compiler error.
 		if (i.keyevent == PM_KeyUp || i.keyevent == PM_KeyDown)
 		{
 			std::future<BOOL> a = std::async(SendInputMessageToApp, pa.GetGameWindowHandle(), i.keyevent, i.key);
@@ -212,14 +209,16 @@ void InputManager::SendSavedInputs()
 		}
 		else
 		{
-			cout << ">> ERROR: INPUT EVENT NOT VALID! " << i.keyevent << endl;
+			cout << ">> [SendSavedInput-ERROR]: INPUT EVENT NOT VALID! " << i.keyevent << endl;
 		}
 	}
+
+
 	if (arrOutInput.size() > 0) {
 
-		int erroRet = SendInput(sizeof(arrOutInput), arrOutInput.data(), sizeof(INPUT));
+		int erroRet = SendInput(arrOutInput.size(), arrOutInput.data(), sizeof(INPUT));
 		if (erroRet == 0) {
-			cout << ">> ERROR: tring to send Move Mouse INPUT via SI, error code: " << GetLastError() << endl;
+			cout << ">> [SendSavedInput-ERROR]: trying to send INPUT via SI, error code: " << GetLastError() << endl;
 		}
 	}
 	arrOutInput.clear();

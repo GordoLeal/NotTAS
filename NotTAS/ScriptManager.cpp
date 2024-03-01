@@ -19,12 +19,14 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 
 	std::fstream fileStream(filename);
 	if (!fileStream.is_open()) {
-		std::cout << ">> ERROR: script file don't exist." << std::endl;
+		std::cout << ">> [LoadFile-ERROR]: script file don't exist." << std::endl;
 		return false;
 	}
+
 	std::string lineText;
 	unsigned int rLine = 0;
 	std::vector<ScriptManager::FileLine> outFrameCalls;
+
 	while (std::getline(fileStream, lineText))
 	{
 		rLine++;
@@ -39,6 +41,7 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 			outFrameCalls.push_back(frame);
 			continue;
 		}
+
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= Frame number =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 		size_t posStartBracks = lineText.find('<');
@@ -47,7 +50,7 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 		if (posStartBracks == std::string::npos || posEndBracks == std::string::npos)
 		{
 			//TODO: better way to show errors
-			std::cout << ">> ERROR: missing brackets in: " << rLine << std::endl;
+			std::cout << ">> [LoadFile-ERROR]: missing brackets in: " << rLine << std::endl;
 			continue;
 		}
 		std::string subtLine = lineText;
@@ -56,7 +59,7 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 			frame.frame = std::stoull(a);
 		}
 		catch (std::out_of_range e) { //invalid int value
-			std::cout << ">> ERROR: invalid frame number at: " << rLine << "|\"" << a << "\"" << std::endl;
+			std::cout << ">> [LoadFile-ERROR]: invalid frame number at: " << rLine << "|\"" << a << "\"" << std::endl;
 			continue;
 		}
 
@@ -64,19 +67,17 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= Function =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
-		std::cout << "reading line: " << rLine << std::endl;
-		int stopedAt = 0;
-
+		std::cout << "[LoadFile-log] reading line: " << rLine << std::endl;
 		size_t posStartParentheses = lineText.find('(');
 		size_t posEndParentheses = lineText.find(')');
 
 		if (posStartParentheses == std::string::npos || posEndParentheses == std::string::npos)
 		{
-			//TODO: better way to show errors
-			std::cout << ">> ERROR: missing parentheses in: " << rLine << std::endl;
+			std::cout << ">> [LoadFile-ERROR]: Missing parentheses in: " << rLine << std::endl;
 			continue;
 		}
 
+		//check start paretheses
 		for (char i : lineText) {
 			if (i != '(')
 			{
@@ -93,39 +94,39 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 		}
 
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-=  ARGS  =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-		int j = 0;
-		std::string _args;
-		frame.args.resize(MAX_ARGS_SIZE);
-		frame.args[j] = _args;
-		for (int i = posStartParentheses + 1; i < lineText.size(); i++) {
-			char lineC = lineText[i];
-			if (lineC != ')') {
-				if (lineC == ' ') {
-					continue;
-				}
-				if (lineC == ',')
-				{
-					frame.args[j] = _args;
-					_args = {};
-					j++;
-					if (j > MAX_ARGS_SIZE) {
-						//TODO: better way to show errors
-						std::cout << "wtf are you doing?" << std::endl;
-						std::cout << ">> ERROR: way to much arguments" << rLine << std::endl; //better way to handle errors
-					}
-					continue;
-				}
-				_args += lineC;
-			}
-			else
+		if (posEndParentheses != posStartParentheses + 1) //if the parentheses is next one to another, there is not arguments to pass.
+		{
+			int j = 0;
+			std::string _args;
+			for (int i = posStartParentheses + 1; i < lineText.size(); i++) 
 			{
-				frame.args[j] = _args;
-				//ex: 123 ) -> 123 
-				lineText.erase(0, i);
-				break;
+				char lineC = lineText[i];
+				if (lineC != ')') 
+				{
+					if (lineC == ' ') 
+					{
+						continue;
+					}
+					if (lineC == ',')
+					{
+						frame.args.push_back(_args);
+						_args.clear();
+						j++;
+						continue;
+					}
+					_args += lineC;
+				}
+				else
+				{
+					frame.args.push_back(_args);
+					//ex: 123 ) -> 123 
+					lineText.erase(0, i);
+					break;
+				}
 			}
+
 		}
+
 		outFrameCalls.push_back(frame);
 	}
 
@@ -152,7 +153,7 @@ void ScriptManager::CallFunction(std::string funcName, std::vector<std::string> 
 		}
 
 	}
-	std::cout << ">> ERROR: trying to call non existent function." << std::endl;
+	std::cout << ">> [CallFunction-ERROR]: trying to call non existent function." << std::endl;
 }
 
 bool ForVectorComparisson(ScriptManager::FileLine& frame1, ScriptManager::FileLine& frame2) {
@@ -177,7 +178,7 @@ bool ScriptManager::SaveScript(const char* fileName)
 				if (z.args[j].size() <= 0)
 					break;
 				outfile << z.args[j];
-				if (j + 1 <= z.args.size())
+				if (j + 1 < z.args.size())
 					if (z.args[j + 1].length() > 0) {
 						outfile << ",";
 					}
@@ -186,7 +187,7 @@ bool ScriptManager::SaveScript(const char* fileName)
 		}
 	}
 	outfile.close();
-	std::cout << "Saved with sucess!" << std::endl;
+	std::cout << "[SaveScript-log] Saved with sucess!" << std::endl;
 	return true;
 }
 
@@ -200,7 +201,7 @@ bool ScriptManager::LoadScript(char* filename) {
 	};
 
 	if (lines.size() <= 0) {
-		std::cout << ">> ERROR: no lines available in LoadScript" << std::endl;
+		std::cout << ">> [SaveScript-ERROR]: no lines available in LoadScript" << std::endl;
 		return false;
 	}
 	//Sort just in case.
@@ -273,17 +274,13 @@ void ScriptManager::ReplaceFrameCallsFromList(FrameCall FrameCalls)
 }
 
 bool ScriptManager::GetFunctionsFromFrame(unsigned long frame, FrameCall* framecallStruct) {
-	std::cout << "[log] GetFunctionFromFrame: on frame: " << frame << std::endl;
 	for (int i = 0; i < allFramesCalls.size(); i++) {
 		if (allFramesCalls[i].frameNumber != frame) {
-			std::cout << "[log] delete: not found in frame: " << allFramesCalls[i].frameNumber << std::endl;
 			continue;
 		}
-		std::cout << "[log] GetFunctionFromFrame: found at frame: " << allFramesCalls[i].frameNumber << std::endl;
 		*framecallStruct = allFramesCalls[i];
 		return true;
 	}
-	std::cout << "[log] GetFunctionFromFrame: AllFramesCalls.size: " << allFramesCalls.size() << std::endl;
 	return false;
 }
 
@@ -295,14 +292,11 @@ bool ScriptManager::AddFunctionToFrame(unsigned int frame, FrameFunction functio
 		return true;
 	}
 	std::cout << "[log] AddFunctionToFrame: Creating new FrameCalls for: " << function.funcNameA << std::endl;
-	std::cout << "[log] AddFunctionToFrame: old allframecalls size: " << allFramesCalls.size() << std::endl;
-
 	//frame don't exist, create a new one.
 	FrameCall frameNew;
 	frameNew.frameNumber = frame;
 	frameNew.calls.push_back(function);
 	allFramesCalls.push_back(frameNew);
-	std::cout << "[log] AddFunctionToFrame: to new: " << allFramesCalls.size() << std::endl;
 	return false;
 }
 
@@ -321,7 +315,7 @@ bool ScriptManager::RemoveFunctionFromframe(unsigned int frame, FrameFunction fu
 						allFramesCalls[i].calls.erase(allFramesCalls[i].calls.begin() + j);
 					return true;
 				}
-				
+
 				if (frameCalls[j].args.size() != function.args.size()) //check if the size is the same.[
 				{
 					break;

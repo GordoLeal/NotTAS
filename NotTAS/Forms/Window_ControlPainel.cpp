@@ -356,7 +356,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddMoveMouse_Click(System::Obj
 	//Add Move mouse
 
 	ScriptManager::FrameFunction fFunction;
-	fFunction.funcNameA = "mouse";
+	fFunction.funcNameA = "movemouse";
 	fFunction.args.resize(2);
 	fFunction.args[0] = std::to_string((int)numericUD_MMove_X->Value);
 	fFunction.args[1] = std::to_string((int)numericUD_MMove_Y->Value);
@@ -519,6 +519,11 @@ System::Void NotTAS::Window_ControlPainel::listBox_FramesNumber_SelectedIndexCha
 		UpdateCurrentEditingFrameTextbox();
 	}
 
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::comboBox_KB_SpecialKey_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
+{
 	return System::Void();
 }
 

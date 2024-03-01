@@ -55,18 +55,14 @@ namespace NotTAS {
 	private: System::Windows::Forms::Button^ button_AddWaitLoadEnd;
 	private: System::Windows::Forms::GroupBox^ groupBox_SetFPS;
 	private: System::Windows::Forms::NumericUpDown^ numUD_SetFPS;
-
 	private: System::Windows::Forms::Button^ button_AddSetFPS;
 	private: System::Windows::Forms::TextBox^ textBox_File_Name;
-
-
 	private: System::Windows::Forms::Button^ button_File_Load;
 	private: System::Windows::Forms::Button^ button_File_Save;
 	private: System::Windows::Forms::GroupBox^ groupBox_Comment;
 	private: System::Windows::Forms::Button^ button_AddComment;
 	private: System::Windows::Forms::TextBox^ textBox_Comment;
 	private: System::Windows::Forms::ListBox^ listBox_FramesNumber;
-
 	private:
 		bool IsRunning = false;
 		void UpdateCurrentEditingFrameTextbox();
@@ -107,17 +103,27 @@ namespace NotTAS {
 			System::Windows::Forms::GroupBox^ groupBox_AddInput;
 			System::Windows::Forms::Label^ label7;
 			System::Windows::Forms::Label^ label6;
-			System::Windows::Forms::Label^ label_MClick_Button;
-			System::Windows::Forms::Label^ label_MClick_InputType;
 			System::Windows::Forms::Label^ label5;
 			System::Windows::Forms::Label^ label4;
 			System::Windows::Forms::Label^ label3;
+			System::Windows::Forms::Label^ label_MClick_Button;
+			System::Windows::Forms::Label^ label_MClick_InputType;
 			System::Windows::Forms::Label^ label2;
 			System::Windows::Forms::GroupBox^ groupBox_SaveLoadFile;
 			System::Windows::Forms::Label^ label_txt;
 			System::Windows::Forms::Label^ label8;
 			System::Windows::Forms::GroupBox^ groupBox_InputsList;
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Window_ControlPainel::typeid));
+			this->groupBox_AddMoveMouse = (gcnew System::Windows::Forms::GroupBox());
+			this->button_AddMoveMouse = (gcnew System::Windows::Forms::Button());
+			this->numericUD_MMove_Y = (gcnew System::Windows::Forms::NumericUpDown());
+			this->numericUD_MMove_X = (gcnew System::Windows::Forms::NumericUpDown());
+			this->groupBox_AddKeyboard = (gcnew System::Windows::Forms::GroupBox());
+			this->comboBox_KB_InputType = (gcnew System::Windows::Forms::ComboBox());
+			this->button_AddKeyboardSpecialKey = (gcnew System::Windows::Forms::Button());
+			this->button_AddKeyboardKey = (gcnew System::Windows::Forms::Button());
+			this->textBox_KB_Key = (gcnew System::Windows::Forms::TextBox());
+			this->comboBox_KB_SpecialKey = (gcnew System::Windows::Forms::ComboBox());
 			this->groupBox_Comment = (gcnew System::Windows::Forms::GroupBox());
 			this->button_AddComment = (gcnew System::Windows::Forms::Button());
 			this->textBox_Comment = (gcnew System::Windows::Forms::TextBox());
@@ -132,20 +138,10 @@ namespace NotTAS {
 			this->button_AddStop = (gcnew System::Windows::Forms::Button());
 			this->groupBox_ShowGame = (gcnew System::Windows::Forms::GroupBox());
 			this->button_AddShowGame = (gcnew System::Windows::Forms::Button());
-			this->groupBox_AddMoveMouse = (gcnew System::Windows::Forms::GroupBox());
-			this->button_AddMoveMouse = (gcnew System::Windows::Forms::Button());
-			this->numericUD_MMove_Y = (gcnew System::Windows::Forms::NumericUpDown());
-			this->numericUD_MMove_X = (gcnew System::Windows::Forms::NumericUpDown());
 			this->groupBox_AddMouse = (gcnew System::Windows::Forms::GroupBox());
 			this->comboBox_MClick_InputType = (gcnew System::Windows::Forms::ComboBox());
 			this->button_MClick_AddInput = (gcnew System::Windows::Forms::Button());
 			this->comboBox_MClick_ButtonPress = (gcnew System::Windows::Forms::ComboBox());
-			this->groupBox_AddKeyboard = (gcnew System::Windows::Forms::GroupBox());
-			this->comboBox_KB_InputType = (gcnew System::Windows::Forms::ComboBox());
-			this->button_AddKeyboardSpecialKey = (gcnew System::Windows::Forms::Button());
-			this->button_AddKeyboardKey = (gcnew System::Windows::Forms::Button());
-			this->textBox_KB_Key = (gcnew System::Windows::Forms::TextBox());
-			this->comboBox_KB_SpecialKey = (gcnew System::Windows::Forms::ComboBox());
 			this->comboBox_SelectFunction = (gcnew System::Windows::Forms::ComboBox());
 			this->button_File_Load = (gcnew System::Windows::Forms::Button());
 			this->button_File_Save = (gcnew System::Windows::Forms::Button());
@@ -165,17 +161,21 @@ namespace NotTAS {
 			groupBox_AddInput = (gcnew System::Windows::Forms::GroupBox());
 			label7 = (gcnew System::Windows::Forms::Label());
 			label6 = (gcnew System::Windows::Forms::Label());
-			label_MClick_Button = (gcnew System::Windows::Forms::Label());
-			label_MClick_InputType = (gcnew System::Windows::Forms::Label());
 			label5 = (gcnew System::Windows::Forms::Label());
 			label4 = (gcnew System::Windows::Forms::Label());
 			label3 = (gcnew System::Windows::Forms::Label());
+			label_MClick_Button = (gcnew System::Windows::Forms::Label());
+			label_MClick_InputType = (gcnew System::Windows::Forms::Label());
 			label2 = (gcnew System::Windows::Forms::Label());
 			groupBox_SaveLoadFile = (gcnew System::Windows::Forms::GroupBox());
 			label_txt = (gcnew System::Windows::Forms::Label());
 			label8 = (gcnew System::Windows::Forms::Label());
 			groupBox_InputsList = (gcnew System::Windows::Forms::GroupBox());
 			groupBox_AddInput->SuspendLayout();
+			this->groupBox_AddMoveMouse->SuspendLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_Y))->BeginInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_X))->BeginInit();
+			this->groupBox_AddKeyboard->SuspendLayout();
 			this->groupBox_Comment->SuspendLayout();
 			this->groupBox_SetFPS->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numUD_SetFPS))->BeginInit();
@@ -183,11 +183,7 @@ namespace NotTAS {
 			this->groupBox_WaitLoadStart->SuspendLayout();
 			this->groupBox_Stop->SuspendLayout();
 			this->groupBox_ShowGame->SuspendLayout();
-			this->groupBox_AddMoveMouse->SuspendLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_Y))->BeginInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_X))->BeginInit();
 			this->groupBox_AddMouse->SuspendLayout();
-			this->groupBox_AddKeyboard->SuspendLayout();
 			groupBox_SaveLoadFile->SuspendLayout();
 			groupBox_InputsList->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numUD_EditingFrame))->BeginInit();
@@ -205,15 +201,15 @@ namespace NotTAS {
 			// 
 			// groupBox_AddInput
 			// 
+			groupBox_AddInput->Controls->Add(this->groupBox_AddMoveMouse);
+			groupBox_AddInput->Controls->Add(this->groupBox_AddKeyboard);
 			groupBox_AddInput->Controls->Add(this->groupBox_Comment);
 			groupBox_AddInput->Controls->Add(this->groupBox_SetFPS);
 			groupBox_AddInput->Controls->Add(this->groupBox_WaitLoadEnd);
 			groupBox_AddInput->Controls->Add(this->groupBox_WaitLoadStart);
 			groupBox_AddInput->Controls->Add(this->groupBox_Stop);
 			groupBox_AddInput->Controls->Add(this->groupBox_ShowGame);
-			groupBox_AddInput->Controls->Add(this->groupBox_AddMoveMouse);
 			groupBox_AddInput->Controls->Add(this->groupBox_AddMouse);
-			groupBox_AddInput->Controls->Add(this->groupBox_AddKeyboard);
 			groupBox_AddInput->Controls->Add(label2);
 			groupBox_AddInput->Controls->Add(this->comboBox_SelectFunction);
 			groupBox_AddInput->Location = System::Drawing::Point(12, 12);
@@ -222,6 +218,170 @@ namespace NotTAS {
 			groupBox_AddInput->TabIndex = 12;
 			groupBox_AddInput->TabStop = false;
 			groupBox_AddInput->Text = L"Add Input";
+			// 
+			// groupBox_AddMoveMouse
+			// 
+			this->groupBox_AddMoveMouse->Controls->Add(this->button_AddMoveMouse);
+			this->groupBox_AddMoveMouse->Controls->Add(label7);
+			this->groupBox_AddMoveMouse->Controls->Add(label6);
+			this->groupBox_AddMoveMouse->Controls->Add(this->numericUD_MMove_Y);
+			this->groupBox_AddMoveMouse->Controls->Add(this->numericUD_MMove_X);
+			this->groupBox_AddMoveMouse->Location = System::Drawing::Point(25, 62);
+			this->groupBox_AddMoveMouse->Name = L"groupBox_AddMoveMouse";
+			this->groupBox_AddMoveMouse->Size = System::Drawing::Size(247, 196);
+			this->groupBox_AddMoveMouse->TabIndex = 4;
+			this->groupBox_AddMoveMouse->TabStop = false;
+			this->groupBox_AddMoveMouse->Text = L"Move Mouse";
+			this->groupBox_AddMoveMouse->Visible = false;
+			// 
+			// button_AddMoveMouse
+			// 
+			this->button_AddMoveMouse->Location = System::Drawing::Point(71, 123);
+			this->button_AddMoveMouse->Name = L"button_AddMoveMouse";
+			this->button_AddMoveMouse->Size = System::Drawing::Size(120, 23);
+			this->button_AddMoveMouse->TabIndex = 4;
+			this->button_AddMoveMouse->Text = L"Add Move Mouse";
+			this->button_AddMoveMouse->UseVisualStyleBackColor = true;
+			this->button_AddMoveMouse->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddMoveMouse_Click);
+			// 
+			// label7
+			// 
+			label7->AutoSize = true;
+			label7->Location = System::Drawing::Point(12, 68);
+			label7->Name = L"label7";
+			label7->Size = System::Drawing::Size(64, 13);
+			label7->TabIndex = 3;
+			label7->Text = L"Y ( Vertical )";
+			// 
+			// label6
+			// 
+			label6->AutoSize = true;
+			label6->Location = System::Drawing::Point(7, 42);
+			label6->Name = L"label6";
+			label6->Size = System::Drawing::Size(76, 13);
+			label6->TabIndex = 2;
+			label6->Text = L"X ( Horizontal )";
+			// 
+			// numericUD_MMove_Y
+			// 
+			this->numericUD_MMove_Y->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 10, 0, 0, 0 });
+			this->numericUD_MMove_Y->Location = System::Drawing::Point(84, 67);
+			this->numericUD_MMove_Y->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 32500, 0, 0, 0 });
+			this->numericUD_MMove_Y->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 32500, 0, 0, System::Int32::MinValue });
+			this->numericUD_MMove_Y->Name = L"numericUD_MMove_Y";
+			this->numericUD_MMove_Y->Size = System::Drawing::Size(120, 20);
+			this->numericUD_MMove_Y->TabIndex = 1;
+			// 
+			// numericUD_MMove_X
+			// 
+			this->numericUD_MMove_X->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 10, 0, 0, 0 });
+			this->numericUD_MMove_X->Location = System::Drawing::Point(84, 39);
+			this->numericUD_MMove_X->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 32500, 0, 0, 0 });
+			this->numericUD_MMove_X->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 32500, 0, 0, System::Int32::MinValue });
+			this->numericUD_MMove_X->Name = L"numericUD_MMove_X";
+			this->numericUD_MMove_X->Size = System::Drawing::Size(120, 20);
+			this->numericUD_MMove_X->TabIndex = 0;
+			// 
+			// groupBox_AddKeyboard
+			// 
+			this->groupBox_AddKeyboard->Controls->Add(this->comboBox_KB_InputType);
+			this->groupBox_AddKeyboard->Controls->Add(label5);
+			this->groupBox_AddKeyboard->Controls->Add(this->button_AddKeyboardSpecialKey);
+			this->groupBox_AddKeyboard->Controls->Add(this->button_AddKeyboardKey);
+			this->groupBox_AddKeyboard->Controls->Add(this->textBox_KB_Key);
+			this->groupBox_AddKeyboard->Controls->Add(label4);
+			this->groupBox_AddKeyboard->Controls->Add(label3);
+			this->groupBox_AddKeyboard->Controls->Add(this->comboBox_KB_SpecialKey);
+			this->groupBox_AddKeyboard->Location = System::Drawing::Point(25, 62);
+			this->groupBox_AddKeyboard->Name = L"groupBox_AddKeyboard";
+			this->groupBox_AddKeyboard->Size = System::Drawing::Size(253, 202);
+			this->groupBox_AddKeyboard->TabIndex = 2;
+			this->groupBox_AddKeyboard->TabStop = false;
+			this->groupBox_AddKeyboard->Text = L"Keyboard";
+			this->groupBox_AddKeyboard->Visible = false;
+			// 
+			// comboBox_KB_InputType
+			// 
+			this->comboBox_KB_InputType->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->comboBox_KB_InputType->FormattingEnabled = true;
+			this->comboBox_KB_InputType->Items->AddRange(gcnew cli::array< System::Object^  >(4) {
+				L"pm_keydown", L"pm_keyup", L"si_keydown",
+					L"si_keyup"
+			});
+			this->comboBox_KB_InputType->Location = System::Drawing::Point(84, 86);
+			this->comboBox_KB_InputType->Name = L"comboBox_KB_InputType";
+			this->comboBox_KB_InputType->Size = System::Drawing::Size(121, 21);
+			this->comboBox_KB_InputType->TabIndex = 7;
+			// 
+			// label5
+			// 
+			label5->AutoSize = true;
+			label5->Location = System::Drawing::Point(17, 89);
+			label5->Name = L"label5";
+			label5->Size = System::Drawing::Size(61, 13);
+			label5->TabIndex = 6;
+			label5->Text = L"Input Type:";
+			// 
+			// button_AddKeyboardSpecialKey
+			// 
+			this->button_AddKeyboardSpecialKey->Location = System::Drawing::Point(104, 144);
+			this->button_AddKeyboardSpecialKey->Name = L"button_AddKeyboardSpecialKey";
+			this->button_AddKeyboardSpecialKey->Size = System::Drawing::Size(101, 23);
+			this->button_AddKeyboardSpecialKey->TabIndex = 5;
+			this->button_AddKeyboardSpecialKey->Text = L"Add Special Key";
+			this->button_AddKeyboardSpecialKey->UseVisualStyleBackColor = true;
+			this->button_AddKeyboardSpecialKey->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddKeyboardSpecialKey_Click);
+			// 
+			// button_AddKeyboardKey
+			// 
+			this->button_AddKeyboardKey->Location = System::Drawing::Point(20, 144);
+			this->button_AddKeyboardKey->Name = L"button_AddKeyboardKey";
+			this->button_AddKeyboardKey->Size = System::Drawing::Size(75, 23);
+			this->button_AddKeyboardKey->TabIndex = 4;
+			this->button_AddKeyboardKey->Text = L"Add Key";
+			this->button_AddKeyboardKey->UseVisualStyleBackColor = true;
+			this->button_AddKeyboardKey->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddKeyboardKey_Click);
+			// 
+			// textBox_KB_Key
+			// 
+			this->textBox_KB_Key->Location = System::Drawing::Point(84, 61);
+			this->textBox_KB_Key->Name = L"textBox_KB_Key";
+			this->textBox_KB_Key->Size = System::Drawing::Size(56, 20);
+			this->textBox_KB_Key->TabIndex = 3;
+			this->textBox_KB_Key->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
+			this->textBox_KB_Key->TextChanged += gcnew System::EventHandler(this, &Window_ControlPainel::textBox_KB_Key_TextChanged);
+			// 
+			// label4
+			// 
+			label4->AutoSize = true;
+			label4->Location = System::Drawing::Point(50, 64);
+			label4->Name = L"label4";
+			label4->Size = System::Drawing::Size(28, 13);
+			label4->TabIndex = 2;
+			label4->Text = L"Key:";
+			// 
+			// label3
+			// 
+			label3->AutoSize = true;
+			label3->Location = System::Drawing::Point(12, 37);
+			label3->Name = L"label3";
+			label3->Size = System::Drawing::Size(66, 13);
+			label3->TabIndex = 1;
+			label3->Text = L"Special Key:";
+			// 
+			// comboBox_KB_SpecialKey
+			// 
+			this->comboBox_KB_SpecialKey->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->comboBox_KB_SpecialKey->FormattingEnabled = true;
+			this->comboBox_KB_SpecialKey->Items->AddRange(gcnew cli::array< System::Object^  >(8) {
+				L"backspace", L"leftctrl", L"leftshift",
+					L"rightctrl", L"rightshift", L"space", L"esc", L"enter"
+			});
+			this->comboBox_KB_SpecialKey->Location = System::Drawing::Point(84, 34);
+			this->comboBox_KB_SpecialKey->Name = L"comboBox_KB_SpecialKey";
+			this->comboBox_KB_SpecialKey->Size = System::Drawing::Size(121, 21);
+			this->comboBox_KB_SpecialKey->TabIndex = 0;
+			this->comboBox_KB_SpecialKey->SelectedIndexChanged += gcnew System::EventHandler(this, &Window_ControlPainel::comboBox_KB_SpecialKey_SelectedIndexChanged);
 			// 
 			// groupBox_Comment
 			// 
@@ -368,67 +528,6 @@ namespace NotTAS {
 			this->button_AddShowGame->UseVisualStyleBackColor = true;
 			this->button_AddShowGame->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddShowGame_Click);
 			// 
-			// groupBox_AddMoveMouse
-			// 
-			this->groupBox_AddMoveMouse->Controls->Add(this->button_AddMoveMouse);
-			this->groupBox_AddMoveMouse->Controls->Add(label7);
-			this->groupBox_AddMoveMouse->Controls->Add(label6);
-			this->groupBox_AddMoveMouse->Controls->Add(this->numericUD_MMove_Y);
-			this->groupBox_AddMoveMouse->Controls->Add(this->numericUD_MMove_X);
-			this->groupBox_AddMoveMouse->Location = System::Drawing::Point(25, 62);
-			this->groupBox_AddMoveMouse->Name = L"groupBox_AddMoveMouse";
-			this->groupBox_AddMoveMouse->Size = System::Drawing::Size(247, 196);
-			this->groupBox_AddMoveMouse->TabIndex = 4;
-			this->groupBox_AddMoveMouse->TabStop = false;
-			this->groupBox_AddMoveMouse->Text = L"Move Mouse";
-			this->groupBox_AddMoveMouse->Visible = false;
-			// 
-			// button_AddMoveMouse
-			// 
-			this->button_AddMoveMouse->Location = System::Drawing::Point(71, 123);
-			this->button_AddMoveMouse->Name = L"button_AddMoveMouse";
-			this->button_AddMoveMouse->Size = System::Drawing::Size(120, 23);
-			this->button_AddMoveMouse->TabIndex = 4;
-			this->button_AddMoveMouse->Text = L"Add Move Mouse";
-			this->button_AddMoveMouse->UseVisualStyleBackColor = true;
-			this->button_AddMoveMouse->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddMoveMouse_Click);
-			// 
-			// label7
-			// 
-			label7->AutoSize = true;
-			label7->Location = System::Drawing::Point(4, 71);
-			label7->Name = L"label7";
-			label7->Size = System::Drawing::Size(74, 13);
-			label7->TabIndex = 3;
-			label7->Text = L"Y ( horizontal )";
-			// 
-			// label6
-			// 
-			label6->AutoSize = true;
-			label6->Location = System::Drawing::Point(17, 44);
-			label6->Name = L"label6";
-			label6->Size = System::Drawing::Size(58, 13);
-			label6->TabIndex = 2;
-			label6->Text = L"X (Vertical)";
-			// 
-			// numericUD_MMove_Y
-			// 
-			this->numericUD_MMove_Y->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 10, 0, 0, 0 });
-			this->numericUD_MMove_Y->Location = System::Drawing::Point(84, 67);
-			this->numericUD_MMove_Y->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 65000, 0, 0, 0 });
-			this->numericUD_MMove_Y->Name = L"numericUD_MMove_Y";
-			this->numericUD_MMove_Y->Size = System::Drawing::Size(120, 20);
-			this->numericUD_MMove_Y->TabIndex = 1;
-			// 
-			// numericUD_MMove_X
-			// 
-			this->numericUD_MMove_X->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 10, 0, 0, 0 });
-			this->numericUD_MMove_X->Location = System::Drawing::Point(84, 39);
-			this->numericUD_MMove_X->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 65000, 0, 0, 0 });
-			this->numericUD_MMove_X->Name = L"numericUD_MMove_X";
-			this->numericUD_MMove_X->Size = System::Drawing::Size(120, 20);
-			this->numericUD_MMove_X->TabIndex = 0;
-			// 
 			// groupBox_AddMouse
 			// 
 			this->groupBox_AddMouse->Controls->Add(label_MClick_Button);
@@ -464,6 +563,7 @@ namespace NotTAS {
 			// 
 			// comboBox_MClick_InputType
 			// 
+			this->comboBox_MClick_InputType->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->comboBox_MClick_InputType->FormattingEnabled = true;
 			this->comboBox_MClick_InputType->Items->AddRange(gcnew cli::array< System::Object^  >(4) {
 				L"pm_keydown", L"pm_keyup", L"si_keydown",
@@ -486,110 +586,13 @@ namespace NotTAS {
 			// 
 			// comboBox_MClick_ButtonPress
 			// 
+			this->comboBox_MClick_ButtonPress->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->comboBox_MClick_ButtonPress->FormattingEnabled = true;
 			this->comboBox_MClick_ButtonPress->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"left", L"right", L"middle" });
 			this->comboBox_MClick_ButtonPress->Location = System::Drawing::Point(71, 44);
 			this->comboBox_MClick_ButtonPress->Name = L"comboBox_MClick_ButtonPress";
 			this->comboBox_MClick_ButtonPress->Size = System::Drawing::Size(121, 21);
 			this->comboBox_MClick_ButtonPress->TabIndex = 0;
-			// 
-			// groupBox_AddKeyboard
-			// 
-			this->groupBox_AddKeyboard->Controls->Add(this->comboBox_KB_InputType);
-			this->groupBox_AddKeyboard->Controls->Add(label5);
-			this->groupBox_AddKeyboard->Controls->Add(this->button_AddKeyboardSpecialKey);
-			this->groupBox_AddKeyboard->Controls->Add(this->button_AddKeyboardKey);
-			this->groupBox_AddKeyboard->Controls->Add(this->textBox_KB_Key);
-			this->groupBox_AddKeyboard->Controls->Add(label4);
-			this->groupBox_AddKeyboard->Controls->Add(label3);
-			this->groupBox_AddKeyboard->Controls->Add(this->comboBox_KB_SpecialKey);
-			this->groupBox_AddKeyboard->Location = System::Drawing::Point(25, 62);
-			this->groupBox_AddKeyboard->Name = L"groupBox_AddKeyboard";
-			this->groupBox_AddKeyboard->Size = System::Drawing::Size(253, 202);
-			this->groupBox_AddKeyboard->TabIndex = 2;
-			this->groupBox_AddKeyboard->TabStop = false;
-			this->groupBox_AddKeyboard->Text = L"Keyboard";
-			this->groupBox_AddKeyboard->Visible = false;
-			// 
-			// comboBox_KB_InputType
-			// 
-			this->comboBox_KB_InputType->FormattingEnabled = true;
-			this->comboBox_KB_InputType->Items->AddRange(gcnew cli::array< System::Object^  >(4) {
-				L"pm_keydown", L"pm_keyup", L"si_keydown",
-					L"si_keyup"
-			});
-			this->comboBox_KB_InputType->Location = System::Drawing::Point(84, 86);
-			this->comboBox_KB_InputType->Name = L"comboBox_KB_InputType";
-			this->comboBox_KB_InputType->Size = System::Drawing::Size(121, 21);
-			this->comboBox_KB_InputType->TabIndex = 7;
-			// 
-			// label5
-			// 
-			label5->AutoSize = true;
-			label5->Location = System::Drawing::Point(17, 89);
-			label5->Name = L"label5";
-			label5->Size = System::Drawing::Size(61, 13);
-			label5->TabIndex = 6;
-			label5->Text = L"Input Type:";
-			// 
-			// button_AddKeyboardSpecialKey
-			// 
-			this->button_AddKeyboardSpecialKey->Location = System::Drawing::Point(104, 144);
-			this->button_AddKeyboardSpecialKey->Name = L"button_AddKeyboardSpecialKey";
-			this->button_AddKeyboardSpecialKey->Size = System::Drawing::Size(101, 23);
-			this->button_AddKeyboardSpecialKey->TabIndex = 5;
-			this->button_AddKeyboardSpecialKey->Text = L"Add Special Key";
-			this->button_AddKeyboardSpecialKey->UseVisualStyleBackColor = true;
-			this->button_AddKeyboardSpecialKey->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddKeyboardSpecialKey_Click);
-			// 
-			// button_AddKeyboardKey
-			// 
-			this->button_AddKeyboardKey->Location = System::Drawing::Point(20, 144);
-			this->button_AddKeyboardKey->Name = L"button_AddKeyboardKey";
-			this->button_AddKeyboardKey->Size = System::Drawing::Size(75, 23);
-			this->button_AddKeyboardKey->TabIndex = 4;
-			this->button_AddKeyboardKey->Text = L"Add Key";
-			this->button_AddKeyboardKey->UseVisualStyleBackColor = true;
-			this->button_AddKeyboardKey->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddKeyboardKey_Click);
-			// 
-			// textBox_KB_Key
-			// 
-			this->textBox_KB_Key->Location = System::Drawing::Point(84, 61);
-			this->textBox_KB_Key->Name = L"textBox_KB_Key";
-			this->textBox_KB_Key->Size = System::Drawing::Size(56, 20);
-			this->textBox_KB_Key->TabIndex = 3;
-			this->textBox_KB_Key->TextAlign = System::Windows::Forms::HorizontalAlignment::Center;
-			this->textBox_KB_Key->TextChanged += gcnew System::EventHandler(this, &Window_ControlPainel::textBox_KB_Key_TextChanged);
-			// 
-			// label4
-			// 
-			label4->AutoSize = true;
-			label4->Location = System::Drawing::Point(50, 64);
-			label4->Name = L"label4";
-			label4->Size = System::Drawing::Size(28, 13);
-			label4->TabIndex = 2;
-			label4->Text = L"Key:";
-			// 
-			// label3
-			// 
-			label3->AutoSize = true;
-			label3->Location = System::Drawing::Point(12, 37);
-			label3->Name = L"label3";
-			label3->Size = System::Drawing::Size(66, 13);
-			label3->TabIndex = 1;
-			label3->Text = L"Special Key:";
-			// 
-			// comboBox_KB_SpecialKey
-			// 
-			this->comboBox_KB_SpecialKey->FormattingEnabled = true;
-			this->comboBox_KB_SpecialKey->Items->AddRange(gcnew cli::array< System::Object^  >(8) {
-				L"backspace", L"leftctrl", L"leftshift",
-					L"rightctrl", L"rightshift", L"space", L"esc", L"enter"
-			});
-			this->comboBox_KB_SpecialKey->Location = System::Drawing::Point(84, 34);
-			this->comboBox_KB_SpecialKey->Name = L"comboBox_KB_SpecialKey";
-			this->comboBox_KB_SpecialKey->Size = System::Drawing::Size(121, 21);
-			this->comboBox_KB_SpecialKey->TabIndex = 0;
 			// 
 			// label2
 			// 
@@ -602,6 +605,7 @@ namespace NotTAS {
 			// 
 			// comboBox_SelectFunction
 			// 
+			this->comboBox_SelectFunction->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->comboBox_SelectFunction->FormattingEnabled = true;
 			this->comboBox_SelectFunction->Items->AddRange(gcnew cli::array< System::Object^  >(9) {
 				L"keyboard", L"mouse", L"movemouse",
@@ -797,12 +801,18 @@ namespace NotTAS {
 			this->Controls->Add(Label_StartFromFrame);
 			this->Controls->Add(this->Button_StartSystem);
 			this->Controls->Add(this->Button_OpenSettings);
-			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::FixedSingle;
+			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::Fixed3D;
 			this->MaximizeBox = false;
 			this->Name = L"Window_ControlPainel";
 			this->Text = L"Not TAS";
 			groupBox_AddInput->ResumeLayout(false);
 			groupBox_AddInput->PerformLayout();
+			this->groupBox_AddMoveMouse->ResumeLayout(false);
+			this->groupBox_AddMoveMouse->PerformLayout();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_Y))->EndInit();
+			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_X))->EndInit();
+			this->groupBox_AddKeyboard->ResumeLayout(false);
+			this->groupBox_AddKeyboard->PerformLayout();
 			this->groupBox_Comment->ResumeLayout(false);
 			this->groupBox_Comment->PerformLayout();
 			this->groupBox_SetFPS->ResumeLayout(false);
@@ -811,14 +821,8 @@ namespace NotTAS {
 			this->groupBox_WaitLoadStart->ResumeLayout(false);
 			this->groupBox_Stop->ResumeLayout(false);
 			this->groupBox_ShowGame->ResumeLayout(false);
-			this->groupBox_AddMoveMouse->ResumeLayout(false);
-			this->groupBox_AddMoveMouse->PerformLayout();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_Y))->EndInit();
-			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_X))->EndInit();
 			this->groupBox_AddMouse->ResumeLayout(false);
 			this->groupBox_AddMouse->PerformLayout();
-			this->groupBox_AddKeyboard->ResumeLayout(false);
-			this->groupBox_AddKeyboard->PerformLayout();
 			groupBox_SaveLoadFile->ResumeLayout(false);
 			groupBox_SaveLoadFile->PerformLayout();
 			groupBox_InputsList->ResumeLayout(false);
@@ -853,5 +857,6 @@ namespace NotTAS {
 	private: System::Void button_File_Load_Click(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void button_AddComment_Click(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void listBox_FramesNumber_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
-	};
+	private: System::Void comboBox_KB_SpecialKey_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
+};
 }
