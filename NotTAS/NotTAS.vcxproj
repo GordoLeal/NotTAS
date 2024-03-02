@@ -180,7 +180,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Window_Settings.resx">
       <DependentUpon>Forms\Window_Settings.h</DependentUpon>
-      <DeploymentContent>true</DeploymentContent>
+      <DeploymentContent>false</DeploymentContent>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

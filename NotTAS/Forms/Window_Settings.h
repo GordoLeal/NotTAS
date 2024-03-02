@@ -52,7 +52,6 @@ namespace NotTAS {
 		{
 			System::Windows::Forms::Label^ label1;
 			System::Windows::Forms::Label^ label2;
-			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(NotTAS::Window_Settings::typeid));
 			this->textBox_AppExe = (gcnew System::Windows::Forms::TextBox());
 			this->textBox_AppWindowName = (gcnew System::Windows::Forms::TextBox());
 			this->button_SaveExit = (gcnew System::Windows::Forms::Button());
@@ -111,13 +110,13 @@ namespace NotTAS {
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(349, 150);
+			this->ControlBox = false;
 			this->Controls->Add(this->button_SaveExit);
 			this->Controls->Add(this->textBox_AppWindowName);
 			this->Controls->Add(label2);
 			this->Controls->Add(this->textBox_AppExe);
 			this->Controls->Add(label1);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::Fixed3D;
-			
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
 			this->Name = L"Window_Settings";

@@ -34,13 +34,6 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 			continue;
 
 		ScriptManager::FileLine frame;
-		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= COMMENT =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
-		if (lineText.at(0) == '!') {
-			frame.call = lineText;
-			outFrameCalls.push_back(frame);
-			continue;
-		}
 
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= Frame number =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -64,6 +57,14 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 		}
 
 		lineText.erase(lineText.begin(), lineText.begin() + posEndBracks + 1);
+
+		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= COMMENT =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+		if (lineText.at(0) == '!') {
+			frame.call = lineText;
+			outFrameCalls.push_back(frame);
+			continue;
+		}
 
 		// =-=-=-=-=-=-=-=-=-=-=-=-=-=-= Function =-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
@@ -167,7 +168,7 @@ bool ScriptManager::SaveScript(const char* fileName)
 	for (FrameCall i : allFramesCalls) {
 		for (FrameFunction z : i.calls) {
 			if (z.funcNameA.at(0) == '!') {
-				outfile << z.funcNameA << "\n";
+				outfile << "<" << i.frameNumber << ">" << z.funcNameA << "\n";
 				continue;
 			}
 
