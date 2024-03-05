@@ -37,7 +37,6 @@ namespace NotTAS {
 			}
 		}
 	private: System::Windows::Forms::GroupBox^ groupBox_AddMouse;
-	protected:
 	private: System::Windows::Forms::ComboBox^ comboBox_MClick_InputType;
 	private: System::Windows::Forms::Button^ button_MClick_AddInput;
 	private: System::Windows::Forms::ComboBox^ comboBox_MClick_ButtonPress;
@@ -63,6 +62,13 @@ namespace NotTAS {
 	private: System::Windows::Forms::Button^ button_AddComment;
 	private: System::Windows::Forms::TextBox^ textBox_Comment;
 	private: System::Windows::Forms::ListBox^ listBox_FramesNumber;
+	private: System::Windows::Forms::GroupBox^ groupBox_AddScript;
+	private: System::Windows::Forms::TextBox^ textBox_AddScript;
+	private: System::Windows::Forms::Button^ button_AddScript;
+
+
+
+
 	private:
 		bool IsRunning = false;
 		void UpdateCurrentEditingFrameTextbox();
@@ -113,7 +119,8 @@ namespace NotTAS {
 			System::Windows::Forms::Label^ label_txt;
 			System::Windows::Forms::Label^ label8;
 			System::Windows::Forms::GroupBox^ groupBox_InputsList;
-			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(Window_ControlPainel::typeid));
+			System::Windows::Forms::Label^ label9;
+			System::Windows::Forms::Label^ label10;
 			this->groupBox_AddMoveMouse = (gcnew System::Windows::Forms::GroupBox());
 			this->button_AddMoveMouse = (gcnew System::Windows::Forms::Button());
 			this->numericUD_MMove_Y = (gcnew System::Windows::Forms::NumericUpDown());
@@ -157,6 +164,9 @@ namespace NotTAS {
 			this->toolTip1 = (gcnew System::Windows::Forms::ToolTip(this->components));
 			this->numeric_StartFromFrame = (gcnew System::Windows::Forms::NumericUpDown());
 			this->bWorker = (gcnew System::ComponentModel::BackgroundWorker());
+			this->groupBox_AddScript = (gcnew System::Windows::Forms::GroupBox());
+			this->textBox_AddScript = (gcnew System::Windows::Forms::TextBox());
+			this->button_AddScript = (gcnew System::Windows::Forms::Button());
 			Label_StartFromFrame = (gcnew System::Windows::Forms::Label());
 			groupBox_AddInput = (gcnew System::Windows::Forms::GroupBox());
 			label7 = (gcnew System::Windows::Forms::Label());
@@ -171,6 +181,8 @@ namespace NotTAS {
 			label_txt = (gcnew System::Windows::Forms::Label());
 			label8 = (gcnew System::Windows::Forms::Label());
 			groupBox_InputsList = (gcnew System::Windows::Forms::GroupBox());
+			label9 = (gcnew System::Windows::Forms::Label());
+			label10 = (gcnew System::Windows::Forms::Label());
 			groupBox_AddInput->SuspendLayout();
 			this->groupBox_AddMoveMouse->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numericUD_MMove_Y))->BeginInit();
@@ -188,6 +200,7 @@ namespace NotTAS {
 			groupBox_InputsList->SuspendLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numUD_EditingFrame))->BeginInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numeric_StartFromFrame))->BeginInit();
+			this->groupBox_AddScript->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// Label_StartFromFrame
@@ -607,9 +620,9 @@ namespace NotTAS {
 			// 
 			this->comboBox_SelectFunction->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
 			this->comboBox_SelectFunction->FormattingEnabled = true;
-			this->comboBox_SelectFunction->Items->AddRange(gcnew cli::array< System::Object^  >(9) {
+			this->comboBox_SelectFunction->Items->AddRange(gcnew cli::array< System::Object^  >(10) {
 				L"keyboard", L"mouse", L"movemouse",
-					L"showgame", L"setfps", L"stop", L"waitloadstart", L"waitloadend", L"comment"
+					L"showgame", L"setfps", L"stop", L"waitloadstart", L"waitloadend", L"comment", L"add script"
 			});
 			this->comboBox_SelectFunction->Location = System::Drawing::Point(64, 20);
 			this->comboBox_SelectFunction->Name = L"comboBox_SelectFunction";
@@ -738,6 +751,24 @@ namespace NotTAS {
 			this->numUD_EditingFrame->TabIndex = 16;
 			this->numUD_EditingFrame->ValueChanged += gcnew System::EventHandler(this, &Window_ControlPainel::numUD_EditingFrame_ValueChanged);
 			// 
+			// label9
+			// 
+			label9->AutoSize = true;
+			label9->Location = System::Drawing::Point(37, 53);
+			label9->Name = L"label9";
+			label9->Size = System::Drawing::Size(65, 13);
+			label9->TabIndex = 1;
+			label9->Text = L"Script Name";
+			// 
+			// label10
+			// 
+			label10->AutoSize = true;
+			label10->Location = System::Drawing::Point(202, 77);
+			label10->Name = L"label10";
+			label10->Size = System::Drawing::Size(21, 13);
+			label10->TabIndex = 3;
+			label10->Text = L".txt";
+			// 
 			// Button_OpenSettings
 			// 
 			this->Button_OpenSettings->Location = System::Drawing::Point(411, 353);
@@ -787,12 +818,43 @@ namespace NotTAS {
 			this->bWorker->ProgressChanged += gcnew System::ComponentModel::ProgressChangedEventHandler(this, &Window_ControlPainel::bWorker_ProgressChanged);
 			this->bWorker->RunWorkerCompleted += gcnew System::ComponentModel::RunWorkerCompletedEventHandler(this, &Window_ControlPainel::bWorker_WorkerCompleted);
 			// 
+			// groupBox_AddScript
+			// 
+			this->groupBox_AddScript->Controls->Add(label10);
+			this->groupBox_AddScript->Controls->Add(this->textBox_AddScript);
+			this->groupBox_AddScript->Controls->Add(label9);
+			this->groupBox_AddScript->Controls->Add(this->button_AddScript);
+			this->groupBox_AddScript->Location = System::Drawing::Point(30, 68);
+			this->groupBox_AddScript->Name = L"groupBox_AddScript";
+			this->groupBox_AddScript->Size = System::Drawing::Size(260, 208);
+			this->groupBox_AddScript->TabIndex = 20;
+			this->groupBox_AddScript->TabStop = false;
+			this->groupBox_AddScript->Text = L"Add Script";
+			// 
+			// textBox_AddScript
+			// 
+			this->textBox_AddScript->Location = System::Drawing::Point(40, 73);
+			this->textBox_AddScript->Name = L"textBox_AddScript";
+			this->textBox_AddScript->Size = System::Drawing::Size(159, 20);
+			this->textBox_AddScript->TabIndex = 2;
+			// 
+			// button_AddScript
+			// 
+			this->button_AddScript->Location = System::Drawing::Point(81, 104);
+			this->button_AddScript->Name = L"button_AddScript";
+			this->button_AddScript->Size = System::Drawing::Size(75, 23);
+			this->button_AddScript->TabIndex = 0;
+			this->button_AddScript->Text = L"Add Script";
+			this->button_AddScript->UseVisualStyleBackColor = true;
+			this->button_AddScript->Click += gcnew System::EventHandler(this, &Window_ControlPainel::button_AddScript_Click);
+			// 
 			// Window_ControlPainel
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->AutoSizeMode = System::Windows::Forms::AutoSizeMode::GrowAndShrink;
 			this->ClientSize = System::Drawing::Size(805, 386);
+			this->Controls->Add(this->groupBox_AddScript);
 			this->Controls->Add(groupBox_SaveLoadFile);
 			this->Controls->Add(groupBox_InputsList);
 			this->Controls->Add(groupBox_AddInput);
@@ -829,6 +891,8 @@ namespace NotTAS {
 			groupBox_InputsList->PerformLayout();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numUD_EditingFrame))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->numeric_StartFromFrame))->EndInit();
+			this->groupBox_AddScript->ResumeLayout(false);
+			this->groupBox_AddScript->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -858,5 +922,6 @@ namespace NotTAS {
 	private: System::Void button_AddComment_Click(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void listBox_FramesNumber_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void comboBox_KB_SpecialKey_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
-};
+	private: System::Void button_AddScript_Click(System::Object^ sender, System::EventArgs^ e);
+	};
 }

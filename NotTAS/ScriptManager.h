@@ -68,6 +68,14 @@ public:
 	bool LoadScript(char* filename);
 
 	/// <summary>
+	/// Load Script but everything on it add var at + line Frame.
+	/// </summary>
+	/// <param name="filename"></param>
+	/// <param name="at"></param>
+	/// <returns></returns>
+	bool LoadAndAddScriptToFrame(char* filename, unsigned int at);
+
+	/// <summary>
 	/// return all function calls from a frame.
 	/// </summary>
 	bool GetFunctionsFromFrame(unsigned long frame, FrameCall* framestruct);

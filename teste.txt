@@ -1,6 +1,12 @@
 <0>showgame()
-<1>keyboard(f,pm_keydown)
+! teste
+<1>keybaoard(f,pm_keydown)
+! testea
 <5>keyboard(f,pm_keyup)
+! testea
+! testea
+! testea
+! testea
 <6>waitloadstart()
 <7>mouse(right,pm_keydown)
 <8>waitloadend()

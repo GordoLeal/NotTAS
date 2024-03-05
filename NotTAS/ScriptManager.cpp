@@ -99,12 +99,12 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 		{
 			int j = 0;
 			std::string _args;
-			for (int i = posStartParentheses + 1; i < lineText.size(); i++) 
+			for (int i = posStartParentheses + 1; i < lineText.size(); i++)
 			{
 				char lineC = lineText[i];
-				if (lineC != ')') 
+				if (lineC != ')')
 				{
-					if (lineC == ' ') 
+					if (lineC == ' ')
 					{
 						continue;
 					}
@@ -135,6 +135,8 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 	lines = outFrameCalls;
 	return true;
 }
+
+
 
 void ScriptManager::AddScriptFunction(const char* functionName, std::function<void(std::vector<std::string>)> func)
 {
@@ -216,27 +218,31 @@ bool ScriptManager::LoadScript(char* filename) {
 	bool found = false;
 	currentFrameCalls->frameNumber = lines[0].frame;
 	for (int i = 0; i < lines.size(); i++) {
+		//std::cout << "call is:" << lines[i].call << " and is " << (lines[i].call.at(0) == '!') << std::endl;
+		if (!(lines[i].call.at(0) == '!'))
+		{
+			//std::cout << "call is:" << lines[i].call << " | testing" << std::endl;
+			found = false;
+			//check if the function name from the line exists inside the registered functions
+			for (FuncStruct x : functionsVector) {
+				if (lines[i].call.compare(x.Name) == 0) {
+					std::cout << lines[i].call << " won comparing agains: " << x.Name << std::endl;
+					found = true;
+					break;
+				}
+			}
 
-		found = false;
-		//check if the function name from the line exists inside the registered functions
-		for (FuncStruct x : functionsVector) {
-			if (lines[i].call.compare(x.Name)) {
-				found = true;
-				break;
+			// if it don't, just show error and continue;
+			if (!found) {
+				printf(">> ERROR:[%s] is not a valid function \n", lines[i].call.c_str());
+				continue;
 			}
 		}
-
-		// if it don't, just show error and continue;
-		if (!found) {
-			//TODO: Better way to show this error to the user
-			printf(">> ERROR:[%s] is not a valid function", lines[i].call.c_str());
-			continue;
-		}
-
 		ff->funcNameA = lines[i].call;
 		ff->args = lines[i].args;
 		currentFrameCalls->calls.push_back(*ff);
 		ff->args.clear();
+
 		if (i + 1 >= lines.size()) {
 			allFramesCalls.push_back(*currentFrameCalls);
 			break;
@@ -283,6 +289,57 @@ bool ScriptManager::GetFunctionsFromFrame(unsigned long frame, FrameCall* framec
 		return true;
 	}
 	return false;
+}
+
+bool ScriptManager::LoadAndAddScriptToFrame(char* filename, unsigned int at)
+{
+	std::vector<ScriptManager::FileLine> lines;
+	if (!LoadFile(filename, lines))
+	{
+		return false;
+	};
+
+	if (lines.size() <= 0) {
+		std::cout << ">> [LoadAndAddScriptToFrame-ERROR]: no lines available" << std::endl;
+		return false;
+	}
+
+	//Sort just in case.
+	sort(lines.begin(), lines.end(), ForVectorComparisson);
+
+	//Reserving memory
+	FrameFunction* ff = new FrameFunction();
+	ff->args.reserve(MAX_ARGS_SIZE);
+
+	bool found;
+	for (int i = 0; i < lines.size(); i++) {
+		found = false;
+
+		if (!(lines[i].call.at(0) == '!'))
+		{
+			found = false;
+			//check if the function name from the line exists inside the registered functions
+			for (FuncStruct x : functionsVector) {
+				if (lines[i].call.compare(x.Name) == 0) {
+					//std::cout << lines[i].call << " won comparing agains: " << x.Name << std::endl;
+					found = true;
+					break;
+				}
+			}
+
+			// if don't, just show error and continue;
+			if (!found) {
+				printf(">> [LoadAndAddScriptToFrame-ERROR]:[%s] is not a valid function \n", lines[i].call.c_str());
+				continue;
+			}
+			ff->args = lines[i].args;
+		}
+
+		ff->funcNameA = lines[i].call;
+		AddFunctionToFrame(at + lines[i].frame, *ff);
+		ff->args.clear();
+	}
+	return true;
 }
 
 bool ScriptManager::AddFunctionToFrame(unsigned int frame, FrameFunction function) {

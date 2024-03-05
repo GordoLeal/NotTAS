@@ -76,25 +76,22 @@ void Window_ControlPainel::UpdateCurrentEditingFrameTextbox() {
 
 System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Object^ sender, System::EventArgs^ e)
 {
-	//// Play button
-	//if (_ml.ScriptName.empty() || _ml.ScriptName == "") {
-	//	std::cout << ">> [StartSystem-log] ERROR: scriptname is empty, please load a file." << std::endl;
-	//	return;
-	//}
-
+	// Play button
+	Button_StartSystem->Enabled = false;
 	if (!_ml.IsRunning()) {
 		std::cout << "[StartSystem-log] Starting..." << std::endl;
 		std::cout << _ml.ScriptName << std::endl;
 		_ml.startingFrame = (int)numeric_StartFromFrame->Value;
 		_ml.ExecuteScript();
-		bWorker->RunWorkerAsync();
+		if (!bWorker->IsBusy && !bWorker->CancellationPending)
+			bWorker->RunWorkerAsync();
 	}
 	else
 	{
 		std::cout << "[StartSystem-log] Stopping..." << std::endl;
 		_ml.StopExecution();
 	}
-
+	Button_StartSystem->Enabled = true;
 	return System::Void();
 }
 
@@ -121,11 +118,8 @@ System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender
 			e->Cancel = true;
 			break;
 		}
-		bWorker->ReportProgress(1);
-		if (!_ml.IsRunning()) {
-			bWorker->CancelAsync();
-		}
 		System::Threading::Thread::Sleep(100);
+		bWorker->ReportProgress(1);
 	}
 	return System::Void();
 }
@@ -133,13 +127,14 @@ System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender
 System::Void NotTAS::Window_ControlPainel::bWorker_ProgressChanged(System::Object^ sender, System::ComponentModel::ProgressChangedEventArgs^ e)
 {
 	Button_StartSystem->Text = _ml.IsRunning() ? gcnew String("Stop") : gcnew String("Play");
+	if (!_ml.IsRunning()) {
+		bWorker->CancelAsync();
+	}
 	return System::Void();
 }
 
 System::Void NotTAS::Window_ControlPainel::bWorker_WorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
 {
-	//Background worker completed
-	Button_StartSystem->Text = gcnew String("Play");
 	return System::Void();
 }
 
@@ -290,7 +285,7 @@ System::Void NotTAS::Window_ControlPainel::button_DeleteInput_Click(System::Obje
 
 			}
 		}
-		std::cout << "[log] End Delete"<< std::endl;
+		std::cout << "[log] End Delete" << std::endl;
 		UpdateCurrentEditingFrameTextbox();
 	}
 	return System::Void();
@@ -308,9 +303,10 @@ System::Void NotTAS::Window_ControlPainel::comboBox_SelectFunction_SelectedIndex
 	groupBox_WaitLoadStart->Visible = false;
 	groupBox_WaitLoadEnd->Visible = false;
 	groupBox_Comment->Visible = false;
+	groupBox_AddScript->Visible = false;
 
 	//show only the necessary.
-	//i could use a switch here but c++ System::String switch is a pain, fuck it, just use a bunch of if... - Gordos
+	//i could use a switch here but c++ System::String switch is a pain, fuck it, just use a bunch of ifs... - Gordos
 	if (comboBox_SelectFunction->Text == gcnew String("keyboard")) { groupBox_AddKeyboard->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("mouse")) { groupBox_AddMouse->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("movemouse")) { groupBox_AddMoveMouse->Visible = true; }
@@ -320,6 +316,7 @@ System::Void NotTAS::Window_ControlPainel::comboBox_SelectFunction_SelectedIndex
 	if (comboBox_SelectFunction->Text == gcnew String("waitloadstart")) { groupBox_WaitLoadStart->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("waitloadend")) { groupBox_WaitLoadEnd->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("comment")) { groupBox_Comment->Visible = true; }
+	if (comboBox_SelectFunction->Text == gcnew String("add script")) { groupBox_AddScript->Visible = true; }
 
 	return System::Void();
 }
@@ -470,7 +467,6 @@ System::Void NotTAS::Window_ControlPainel::button_File_Save_Click(System::Object
 	std::string filename;
 	MarshalString(textBox_File_Name->Text, filename);
 	filename += ".txt";
-	//TODO: ui
 	if (_sm.SaveScript(filename.data())) {
 		MessageBoxA(NULL, "File Saved", "Not TAS", MB_OK);
 	}
@@ -524,6 +520,26 @@ System::Void NotTAS::Window_ControlPainel::listBox_FramesNumber_SelectedIndexCha
 
 System::Void NotTAS::Window_ControlPainel::comboBox_KB_SpecialKey_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 {
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::button_AddScript_Click(System::Object^ sender, System::EventArgs^ e)
+{
+	// Merge script from another file into the current frames.
+
+	button_AddScript->Enabled = false;
+	if (System::String::IsNullOrWhiteSpace(textBox_AddScript->Text)) {
+		MessageBoxA(NULL, "please fill the textbar with something valid", "ERROR", MB_OK);
+		button_AddScript->Enabled = true;
+		return System::Void();
+	}
+	String^ finText = textBox_AddScript->Text + ".txt";
+	std::string fileLoc;
+	MarshalString(finText, fileLoc);
+	(unsigned int)numUD_EditingFrame->Value;
+	_sm.LoadAndAddScriptToFrame((char*)fileLoc.c_str(), (unsigned int)numUD_EditingFrame->Value);
+	button_AddScript->Enabled = true;
+	UpdateCurrentEditingFrameTextbox();
 	return System::Void();
 }
 
