@@ -365,8 +365,12 @@ bool ScriptManager::RemoveFunctionFromframe(unsigned int frame, FrameFunction fu
 		}
 		std::vector<FrameFunction> frameCalls = allFramesCalls[i].calls;
 		for (int j = 0; j < frameCalls.size(); j++) {
-			if (frameCalls[j].funcNameA == function.funcNameA) { //find the function name.
-				if (function.funcNameA.at(0) == '!') {
+			//find the function name.
+			if (frameCalls[j].funcNameA == function.funcNameA) 
+			{ 
+				//is comment?
+				if (function.funcNameA.at(0) == '!') 
+				{
 					if (allFramesCalls[i].calls.size() <= 1)
 						allFramesCalls.erase(allFramesCalls.begin() + i);
 					else
@@ -374,21 +378,31 @@ bool ScriptManager::RemoveFunctionFromframe(unsigned int frame, FrameFunction fu
 					return true;
 				}
 
-				if (frameCalls[j].args.size() != function.args.size()) //check if the size is the same.[
+				//check if the args size is the same.
+				if (frameCalls[j].args.size() != function.args.size()) 
 				{
+					//if is not, this is not the one we want to delete
 					break;
 				}
 
-				if (function.args.size() > 0) {
+				// check if the function has args
+				if (function.args.size() > 0) 
+				{ 
 					bool isEqual = true;
-					for (int z = 0; z < function.args.size(); z++) { //check all the args and if they are the same.
-						if (frameCalls[j].args[z] != function.args[z]) {
+					
+					//check if all the args and are the same.
+					for (int z = 0; z < function.args.size(); z++) { 
+						if (frameCalls[j].args[z] != function.args[z]) 
+						{
+							//if any arg is different we don't need to check for the next one, we already know is not the function we are looking for
 							isEqual = false;
-							break;
+							break; 
 						}
 					}
-					if (!isEqual) // if is not, go to the next function
-						break;
+
+					// if is not, check the next function if available
+					if (!isEqual) 
+						continue;
 				}
 
 				//if we are going to delete the only available function just delete the framecall so we don't get memory leak.

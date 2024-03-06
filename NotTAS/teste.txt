@@ -1,0 +1,2 @@
+<0>mouse(right,pm_keydown)
+<0>mouse(left,pm_keydown)
