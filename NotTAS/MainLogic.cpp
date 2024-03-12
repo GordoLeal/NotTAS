@@ -51,15 +51,18 @@ void MainLogic::ExecutionThread() {
 /// Check the level transition loading status
 /// </summary>
 void MainLogic::CheckLoad() {
-
+	intptr_t afinalAddress = _pa.GetGameBaseMemoryAddress() + loadingAddress;
 	if (WaitingLoadingToStart) {
 		//std::vector<DWORD> offsets{ 0xA0 };
 		intptr_t loadAddress;
 		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
-		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + loadingAddress, loadingOffsets);
-		while (!isInLoad && keepLooping) {
+		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), afinalAddress, loadingOffsets);
+		while (!isInLoad && keepLooping) 
+		{
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
-			std::cout << "Waiting for load to start: " << isInLoad << std::endl;
+			std::cout << "[waitingloadtostart-log]Waiting for load to start: " << isInLoad << std::endl;
+			//this delay is necessary otherwise IsInLoad is gonna byte flip at random. no idea what causes it
+			Sleep(1);
 		}
 		//Load started, now we wait for it to end;
 		WaitingLoadingToStart = false;
@@ -70,10 +73,14 @@ void MainLogic::CheckLoad() {
 		//std::vector<DWORD> offsets{ 0x20,0x1D0 };
 		intptr_t loadAddress;
 		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03319550, offsets);
-		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + loadingAddress, loadingOffsets);
-		while (isInLoad && keepLooping) {
+		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), afinalAddress, loadingOffsets);
+
+		while (isInLoad && keepLooping) 
+		{
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
-			std::cout << "Waiting for load to end: " << isInLoad << std::endl;
+			std::cout << "[waitingload-end-Log]Waiting for load to end: " << isInLoad << std::endl;
+			//this delay is necessary otherwise IsInLoad is gonna byte flip at random. no idea what causes it
+			Sleep(1); 
 		}
 		WaitingLoadingToEnd = false;
 	}

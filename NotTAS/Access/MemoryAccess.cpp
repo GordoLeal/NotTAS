@@ -18,7 +18,7 @@ float MemoryAccess::GetFloatInAddress(HANDLE handle, intptr_t address)
 byte MemoryAccess::GetByteInAddress(HANDLE handle, intptr_t address)
 {
 	byte buffer1 = 0;
-	ReadProcessMemory(handle, (LPCVOID)address, &buffer1, sizeof(buffer1), nullptr);
+	ReadProcessMemory(handle, (LPCVOID)address, &buffer1, sizeof(byte), nullptr);
 	return buffer1;
 }
 
