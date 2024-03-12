@@ -795,7 +795,6 @@ namespace NotTAS {
 			// checkBox_StartOnGameDetect
 			// 
 			this->checkBox_StartOnGameDetect->AutoSize = true;
-			this->checkBox_StartOnGameDetect->Enabled = false;
 			this->checkBox_StartOnGameDetect->Location = System::Drawing::Point(656, 333);
 			this->checkBox_StartOnGameDetect->Name = L"checkBox_StartOnGameDetect";
 			this->checkBox_StartOnGameDetect->Size = System::Drawing::Size(131, 17);

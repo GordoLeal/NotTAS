@@ -1,34 +1,84 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <thread>
 #include "MainLogic.h"
 #include "FuncInterpreter.h"
 #include "Access/MemoryAccess.h"
 
-void MainLogic::ExecuteScript()
+void MainLogic::ExecuteScript(bool StartOnOpen)
 {
-	if (!_pa.SetGameHandle(AppExeName.c_str(), (char*)AppWindowName.c_str())) {
-		std::cout << ">> [ExecuteScript-log] ERROR: could not set game handle and window name" << std::endl;
-		return;
-	}
 
-	if (!keepLooping) {
-		//We are removing file loading to convert to only the internal loading.
-		//std::cout << "Loading script: " << fileName << std::endl;
-		//if (!_sm.LoadScript(fileName))
-		//{
-		//	std::cout << ">> ERROR: Script File don't exist, please create one or make sure is not a typo." << std::endl;
-		//	return;
-		//};
-		std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
-		loopThread = std::thread(&MainLogic::ExecutionThread, this);
+	//wait for the program to start or start immediatly if possible
+	if (StartOnOpen)
+	{
+		foas = false;
+		keepChecking = true;
+		std::thread([this]
+			{
+				std::cout << "[ExecuteScript-log]: Starting async loop 1..." << std::endl;
+				bool keel = false;
+				//keep trying to set the game handle and window, if it can set both it means the game is open.
+				while (!keel) {
+					std::cout << "[ExecuteScript-log]: Checking for the game." << std::endl;
+					keel = _pa.SetGameHandle(AppExeName.c_str(), (char*)AppWindowName.c_str(), true);
+					//keep checking == false, User asked to stop looking for the program.
+					if (!keepChecking)
+					{
+						std::cout << "[ExecuteScript-log]: Stopping async loop 1..." << std::endl;
+						return;
+					}
+					Sleep(5);
+				};
+				std::cout << "[ExecuteScript-log]: Process found" << std::endl;
+				foas = true;
+			}).detach();
+
+			std::thread([this]
+				{
+					std::cout << "[ExecuteScript-log]: Startingn async loop 2..." << foas << std::endl;
+					//wait for the game handle and window to be set
+					while (!foas)
+					{
+						//keep checking == false, User asked to stop looking for the program.
+						if (!keepChecking)
+						{
+							std::cout << "[ExecuteScript-log]: Stopping async loop 2..." << std::endl;
+							return;
+						}
+						Sleep(5);
+					}
+					std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
+					loopThread = std::thread(&MainLogic::ExecutionThread, this);
+				}).detach();
+
 	}
 	else
 	{
-		//Code Safety during development, in case the script get executed twice.
-		std::cout << "!! [ExecuteScript-log] DEVELOPMENT WARNING: Stopping script from Execute Script Function." << std::endl;
-		StopExecution();
+		if (!_pa.SetGameHandle(AppExeName.c_str(), (char*)AppWindowName.c_str(), false))
+		{
+			std::cout << ">> [ExecuteScript-ERROR]: could not set game handle and window name" << std::endl;
+			return;
+		}
+
+		std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
+		loopThread = std::thread(&MainLogic::ExecutionThread, this);
+
 	}
+
+	////KeepLooping == true, it means the tool is already doing something, stop it.
+	//if (!keepLooping)
+	//{
+	//	std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
+	//	loopThread = std::thread(&MainLogic::ExecutionThread, this);
+	//}
+	//else
+	//{
+	//	//Code Safety during development, in case the script get executed twice.
+	//	std::cout << "!! [ExecuteScript-WARNING] DEVELOPMENT WARNING: Stopping script from Execute Script Function." << std::endl;
+	//	StopExecution();
+	//}
 }
 
 /// <summary>
@@ -38,7 +88,8 @@ void MainLogic::ExecuteScript()
 void MainLogic::ExecutionThread() {
 	keepLooping = true;
 	currentFrame = 0;
-	while (keepLooping) {
+	while (keepLooping)
+	{
 		printf("[ExecutionThread-log] current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
 		CheckLoad();
@@ -57,10 +108,10 @@ void MainLogic::CheckLoad() {
 		intptr_t loadAddress;
 		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
 		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), afinalAddress, loadingOffsets);
-		while (!isInLoad && keepLooping) 
+		while (!isInLoad && keepLooping)
 		{
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
-			std::cout << "[waitingloadtostart-log]Waiting for load to start: " << isInLoad << std::endl;
+			std::cout << "[waitload-start-log] Waiting for load to start: " << isInLoad << std::endl;
 			//this delay is necessary otherwise IsInLoad is gonna byte flip at random. no idea what causes it
 			Sleep(1);
 		}
@@ -69,18 +120,19 @@ void MainLogic::CheckLoad() {
 	}
 
 	//if we are waiting for load to end, make sure the load at least started.
-	if (WaitingLoadingToEnd && isInLoad) {
+	if (WaitingLoadingToEnd && isInLoad)
+	{
 		//std::vector<DWORD> offsets{ 0x20,0x1D0 };
 		intptr_t loadAddress;
 		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03319550, offsets);
 		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), afinalAddress, loadingOffsets);
 
-		while (isInLoad && keepLooping) 
+		while (isInLoad && keepLooping)
 		{
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
-			std::cout << "[waitingload-end-Log]Waiting for load to end: " << isInLoad << std::endl;
+			std::cout << "[waitload-end-Log] Waiting for load to end: " << isInLoad << std::endl;
 			//this delay is necessary otherwise IsInLoad is gonna byte flip at random. no idea what causes it
-			Sleep(1); 
+			Sleep(1);
 		}
 		WaitingLoadingToEnd = false;
 	}
@@ -103,7 +155,10 @@ void MainLogic::ExecuteFrame(unsigned long frame)
 void MainLogic::StopExecution()
 {
 	keepLooping = false;
-	loopThread.detach();
+	keepChecking = false;
+
+	if (loopThread.joinable())
+		loopThread.detach();
 }
 
 void MainLogic::LoadTASSCript()
@@ -114,6 +169,11 @@ void MainLogic::LoadTASSCript()
 bool MainLogic::IsRunning()
 {
 	return keepLooping;
+}
+
+bool MainLogic::IsWaitingProcess()
+{
+	return keepChecking;
 }
 
 unsigned long MainLogic::GetCurrentFrame()

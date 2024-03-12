@@ -1,3 +1,5 @@
+#include <thread>
+#include <iostream>
 #include "Window_ControlPainel.h"
 using namespace NotTAS;
 
@@ -76,17 +78,22 @@ System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Obje
 {
 	// Play button
 	Button_StartSystem->Enabled = false;
-	if (!_ml.IsRunning()) {
+
+	if (!_ml.IsRunning() && !_ml.IsWaitingProcess()) {
 		std::cout << "[StartSystem-log] Starting..." << std::endl;
 		std::cout << _ml.ScriptName << std::endl;
 		_ml.startingFrame = (int)numeric_StartFromFrame->Value;
-		_ml.ExecuteScript();
+		_ml.ExecuteScript(checkBox_StartOnGameDetect->Checked);
+		if (checkBox_StartOnGameDetect->Checked) {
+			checkBox_StartOnGameDetect->Enabled = false;
+		}
 		if (!bWorker->IsBusy && !bWorker->CancellationPending)
 			bWorker->RunWorkerAsync();
 	}
 	else
 	{
 		std::cout << "[StartSystem-log] Stopping..." << std::endl;
+		checkBox_StartOnGameDetect->Enabled = true;
 		_ml.StopExecution();
 	}
 	Button_StartSystem->Enabled = true;
@@ -124,8 +131,12 @@ System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender
 
 System::Void NotTAS::Window_ControlPainel::bWorker_ProgressChanged(System::Object^ sender, System::ComponentModel::ProgressChangedEventArgs^ e)
 {
-	Button_StartSystem->Text = _ml.IsRunning() ? gcnew String("Stop") : gcnew String("Play");
-	if (!_ml.IsRunning()) {
+	if (_ml.IsRunning() || _ml.IsWaitingProcess()) {
+		Button_StartSystem->Text = gcnew String("Stop");
+	}
+	else
+	{
+		Button_StartSystem->Text = gcnew String("Play");
 		bWorker->CancelAsync();
 	}
 	return System::Void();

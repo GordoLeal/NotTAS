@@ -30,19 +30,24 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 /// <param name="ExeName"></param>
 /// <param name="gameWindowName"></param>
 /// <returns></returns>
-bool ProcessAccess::SetGameHandle(const wchar_t* ExeName, char* gameWindowName)
+bool ProcessAccess::SetGameHandle(const wchar_t* ExeName, char* gameWindowName, bool IgnoreWarning)
 {
-	std::wcout << "SetGameHandle:"<<ExeName << "|" << gameWindowName << std::endl;
+	std::wcout << "SetGameHandle:" << ExeName << "|" << gameWindowName << std::endl;
 	int processID = FindProcbyName(ExeName);
 	ProcessAccess& pa = ProcessAccess::GetInstance();
 
 	if (processID == 0) { // 0 = windows explorer.
-		MessageBoxW(NULL, L"Process not found. is the application open?", L"", MB_OK);
+		if (!IgnoreWarning)
+			MessageBoxW(NULL, L"Process not found. is the application open?", L"", MB_OK);
+		else
+		{
+			std::cout << "[SetGameHandle-log] Process not found. searching again..." << std::endl;
+		}
 		return false;
 	}
 
 	pa.gameHwnd = OpenProcess(
-		PROCESS_QUERY_INFORMATION | 
+		PROCESS_QUERY_INFORMATION |
 		PROCESS_VM_READ | // read into process memory
 		PROCESS_VM_OPERATION |
 		PROCESS_VM_WRITE, // Write into process memory
@@ -50,25 +55,45 @@ bool ProcessAccess::SetGameHandle(const wchar_t* ExeName, char* gameWindowName)
 		processID
 	);
 
+	//!! == == == Get the handle for the ggame window. == == == !!
 	//i don't like this hack way of getting the handle of the game window, but it works...
 	SendToWind sba;
 	sba.name = gameWindowName;
 
 	if (EnumWindows(EnumWindowsProc, reinterpret_cast<LPARAM>(&sba)))
 	{
-		//TODO: do something if can't find window
-		std::cout << ">> ERROR: WINDOW COULD NOT BE FOUND!" << std::endl;
+		if (!IgnoreWarning) {
+			MessageBoxW(NULL, L"Window handle not found. is the application open?", L"", MB_OK);
+		}
+		else
+		{
+			std::cout << "[SetGameHandle-log] Window Handle not found. searching again..." << std::endl;
+		}
+		return false;
 	};
 
 	pa.gameWindowHwnd = sba.windowHandle;
 	if (pa.gameWindowHwnd == NULL) {
-		MessageBoxW(NULL, L"Window handle not found. is the application open?", L"", MB_OK);
+		if (!IgnoreWarning) {
+			MessageBoxW(NULL, L"Window handle not found. is the application open?", L"", MB_OK);
+		}
+		else
+		{
+			std::cout << "[SetGameHandle-log] Window Handle not found. searching again..." << std::endl;
+		}
 		return false;
 	}
 
+	// !! == == == Base Address from the application == == == !!
 	pa.gameMainMemoryAddress = ProcessAccess::GetBaseAddress(processID, ExeName);
 	if (pa.gameMainMemoryAddress == 0x0) {
-		MessageBoxW(NULL, L"Game Base Module not found. is the application open?", L"", MB_OK);
+		if (!IgnoreWarning) {
+			MessageBoxW(NULL, L"Game Base Module not found. is the application open?", L"", MB_OK);
+		}
+		else
+		{
+			std::cout << "[SetGameHandle-log] Base Address from application not found. searching again..." << std::endl;
+		}
 		return false;
 	}
 	return true;

@@ -19,6 +19,7 @@ private:
 	MainLogic(const MainLogic&) = delete;
 	std::thread loopThread;
 	bool keepLooping = false;
+	bool keepChecking = false;
 	unsigned long currentFrame = 0;
 	void ExecutionThread();
 	void ExecuteFrame(unsigned long frame);
@@ -27,7 +28,7 @@ private:
 	ProcessAccess& _pa = ProcessAccess::GetInstance();
 	bool isInLoad = false;
 	void CheckLoad();
-
+	bool foas = false;
 
 public:
 	//Memory
@@ -58,9 +59,10 @@ public:
 	void StopExecution();
 	void LoadTASSCript();
 	bool IsRunning();
+	bool IsWaitingProcess();
 	unsigned long GetCurrentFrame();
 
-	void ExecuteScript();
+	void ExecuteScript(bool StartOnOpen);
 };
 #endif // !MAINLOGIC_H
 

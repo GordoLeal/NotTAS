@@ -11,7 +11,7 @@ public:
 	}
 	static int FindProcbyName(const wchar_t* name);
 	static intptr_t GetBaseAddress(DWORD id, const wchar_t* name);
-	static bool SetGameHandle(const wchar_t* gameName, char* gameWindowName);
+	static bool SetGameHandle(const wchar_t* gameName, char* gameWindowName, bool IgnoreWarning);
 	void FocusOnGameWindow();
 	HANDLE GetGameHwnd();
 	HWND GetGameWindowHandle();
