@@ -84,14 +84,14 @@ void FuncInterpreter::WaitLoadEnd(std::vector<std::string> args)
 void FuncInterpreter::SetGameFPS(std::vector<std::string> args)
 {
 	printf("getting fpsStartAddress from offsets \n");
-	ProcessAccess& pa = ProcessAccess::GetInstance();
-	//TODO: Read this value from another place, a file or settings
-	intptr_t fpsStartAddress = 0x03414EA0;
-	intptr_t gameModuleAddress = pa.GetGameBaseMemoryAddress();
-	//TODO: Read this value from another place, a file or settings
-	std::vector<DWORD> offsets{0x10,0x378};
-	intptr_t fpsAddress = MemoryAccess::GetAddressFromOffsets(pa.GetGameHwnd(), gameModuleAddress + fpsStartAddress, offsets);
-	MemoryAccess::WriteFloatToAdress(pa.GetGameHwnd(), fpsAddress, stof(args[0]));
+
+	ProcessAccess& _pa = ProcessAccess::GetInstance();
+	MainLogic& _ml = MainLogic::GetInstance();
+	//intptr_t fpsStartAddress = 0x03414EA0;
+	intptr_t gameModuleAddress = _pa.GetGameBaseMemoryAddress();
+	//std::vector<DWORD> offsets{0x10,0x378};
+	intptr_t fpsAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), gameModuleAddress + _ml.fpsAddress, _ml.fpsOffsets);
+	MemoryAccess::WriteFloatToAdress(_pa.GetGameHwnd(), fpsAddress, stof(args[0]));
 
 }
 

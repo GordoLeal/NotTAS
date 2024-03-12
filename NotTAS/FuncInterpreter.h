@@ -23,6 +23,7 @@ public:
 	static void WaitLoadStart(std::vector<std::string> args);
 	static void WaitLoadEnd(std::vector<std::string> args);
 private:
+	MainLogic& _ml = MainLogic::GetInstance();
 	~FuncInterpreter() = default;
 
 };

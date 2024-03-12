@@ -1,11 +1,11 @@
+#ifndef MAINLOGIC_H
+#define MAINLOGIC_H
 #include <iostream>
 #include <thread>
 #include "InputManager.h"
 #include "ScriptManager.h"
 #include "Access/ProcessAccess.h"
 
-#ifndef MAINLOGIC_H
-#define MAINLOGIC_H
 
 
 /// <summary>
@@ -16,8 +16,8 @@ class MainLogic
 {
 private:
 	MainLogic() {};
-	std::thread loopThread;
 	MainLogic(const MainLogic&) = delete;
+	std::thread loopThread;
 	bool keepLooping = false;
 	unsigned long currentFrame = 0;
 	void ExecutionThread();
@@ -27,7 +27,16 @@ private:
 	ProcessAccess& _pa = ProcessAccess::GetInstance();
 	bool isInLoad = false;
 	void CheckLoad();
+
+
 public:
+	//Memory
+	//Loading
+	intptr_t loadingAddress;
+	std::vector<DWORD> loadingOffsets;
+	//Set FPS
+	intptr_t fpsAddress;
+	std::vector<DWORD> fpsOffsets;
 	static MainLogic& GetInstance() {
 		// We only need one call to this class, so making it a singleton would help reduce code.
 		static MainLogic instance;

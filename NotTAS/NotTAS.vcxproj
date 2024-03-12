@@ -150,6 +150,7 @@
     <ClCompile Include="MainWindow.cpp" />
     <ClCompile Include="ScriptManager.cpp" />
     <ClCompile Include="InputManager.cpp" />
+    <ClCompile Include="SettingsFileManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Access\MemoryAccess.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="ScriptManager.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="SettingsFileManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

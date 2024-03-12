@@ -1,11 +1,9 @@
 #include "Window_ControlPainel.h"
 using namespace NotTAS;
 
-// For some reason  i don't know. even if is referencing the same static pointer, multiple calls to 
-// a instance can consume some few bytes of memory every call, to fix this call the instance once at the start of the .cpp and let the compiler deal with it.
-// seems to have solved the problem.
-ScriptManager& _sm = ScriptManager::GetInstance();
-MainLogic& _ml = MainLogic::GetInstance();
+//
+//ScriptManager& _sm = ScriptManager::GetInstance();
+//MainLogic& _ml = MainLogic::GetInstance();
 
 /// <summary>
 /// System::String -> std::string
@@ -508,7 +506,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddComment_Click(System::Objec
 
 System::Void NotTAS::Window_ControlPainel::listBox_FramesNumber_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 {
-	if (listBox_FramesNumber->SelectedValue != NULL) {
+	if (listBox_FramesNumber->SelectedIndex > -1) {
 		std::string a;
 		MarshalString(listBox_FramesNumber->Text, a);
 		numUD_EditingFrame->Value = std::stoi(a);

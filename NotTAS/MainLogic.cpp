@@ -53,10 +53,10 @@ void MainLogic::ExecutionThread() {
 void MainLogic::CheckLoad() {
 
 	if (WaitingLoadingToStart) {
-		//TODO: Read values from a file or settings file
-		std::vector<DWORD> offsets{ 0xA0 };
+		//std::vector<DWORD> offsets{ 0xA0 };
 		intptr_t loadAddress;
-		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
+		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
+		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + loadingAddress, loadingOffsets);
 		while (!isInLoad && keepLooping) {
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
 			std::cout << "Waiting for load to start: " << isInLoad << std::endl;
@@ -67,10 +67,10 @@ void MainLogic::CheckLoad() {
 
 	//if we are waiting for load to end, make sure the load at least started.
 	if (WaitingLoadingToEnd && isInLoad) {
-		//TODO: Read values from a file or settings file
-		std::vector<DWORD> offsets{ 0x20,0x1D0 };
+		//std::vector<DWORD> offsets{ 0x20,0x1D0 };
 		intptr_t loadAddress;
-		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03319550, offsets);
+		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03319550, offsets);
+		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + loadingAddress, loadingOffsets);
 		while (isInLoad && keepLooping) {
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
 			std::cout << "Waiting for load to end: " << isInLoad << std::endl;

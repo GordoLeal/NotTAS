@@ -1,7 +1,7 @@
-#include <iostream>
-#include <Windows.h>
 #ifndef PROCESSACCESS_H
 #define PROCESSACCESS_H
+#include <iostream>
+#include <Windows.h>
 class ProcessAccess
 {
 public:
@@ -19,6 +19,7 @@ public:
 
 private:
 	ProcessAccess() {}
+	ProcessAccess(const ProcessAccess&) = delete;
 	~ProcessAccess();
 	HANDLE gameHwnd = nullptr;
 	HWND gameWindowHwnd = nullptr;

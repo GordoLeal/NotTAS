@@ -1,4 +1,8 @@
 #pragma once
+#include <iostream>
+#include <filesystem>
+#include "..\MainLogic.h"
+#include "..\SettingsFileManager.h"
 
 namespace NotTAS {
 
@@ -19,6 +23,7 @@ namespace NotTAS {
 		Window_Settings(void)
 		{
 			InitializeComponent();
+			LoadSettingFiles();
 		}
 
 	protected:
@@ -32,10 +37,14 @@ namespace NotTAS {
 				delete components;
 			}
 		}
-
+	private:
+		void LoadSettingFiles();
+		MainLogic& _ml = MainLogic::GetInstance();
 	private: System::Windows::Forms::TextBox^ textBox_AppExe;
 	private: System::Windows::Forms::TextBox^ textBox_AppWindowName;
 	private: System::Windows::Forms::Button^ button_SaveExit;
+	private: System::Windows::Forms::ListBox^ listBox_SettingFiles;
+	private: System::Windows::Forms::Label^ label3;
 
 	private:
 		/// <summary>
@@ -55,6 +64,8 @@ namespace NotTAS {
 			this->textBox_AppExe = (gcnew System::Windows::Forms::TextBox());
 			this->textBox_AppWindowName = (gcnew System::Windows::Forms::TextBox());
 			this->button_SaveExit = (gcnew System::Windows::Forms::Button());
+			this->listBox_SettingFiles = (gcnew System::Windows::Forms::ListBox());
+			this->label3 = (gcnew System::Windows::Forms::Label());
 			label1 = (gcnew System::Windows::Forms::Label());
 			label2 = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
@@ -84,7 +95,6 @@ namespace NotTAS {
 			this->textBox_AppExe->ReadOnly = true;
 			this->textBox_AppExe->Size = System::Drawing::Size(325, 20);
 			this->textBox_AppExe->TabIndex = 1;
-			this->textBox_AppExe->Text = L"Pineapple-Win64-Shipping.exe";
 			// 
 			// textBox_AppWindowName
 			// 
@@ -93,11 +103,10 @@ namespace NotTAS {
 			this->textBox_AppWindowName->ReadOnly = true;
 			this->textBox_AppWindowName->Size = System::Drawing::Size(325, 20);
 			this->textBox_AppWindowName->TabIndex = 3;
-			this->textBox_AppWindowName->Text = L"SpongeBob";
 			// 
 			// button_SaveExit
 			// 
-			this->button_SaveExit->Location = System::Drawing::Point(239, 113);
+			this->button_SaveExit->Location = System::Drawing::Point(239, 268);
 			this->button_SaveExit->Name = L"button_SaveExit";
 			this->button_SaveExit->Size = System::Drawing::Size(98, 23);
 			this->button_SaveExit->TabIndex = 5;
@@ -105,12 +114,32 @@ namespace NotTAS {
 			this->button_SaveExit->UseVisualStyleBackColor = true;
 			this->button_SaveExit->Click += gcnew System::EventHandler(this, &Window_Settings::button_SaveExit_Click);
 			// 
+			// listBox_SettingFiles
+			// 
+			this->listBox_SettingFiles->FormattingEnabled = true;
+			this->listBox_SettingFiles->Location = System::Drawing::Point(12, 141);
+			this->listBox_SettingFiles->Name = L"listBox_SettingFiles";
+			this->listBox_SettingFiles->Size = System::Drawing::Size(325, 121);
+			this->listBox_SettingFiles->TabIndex = 6;
+			this->listBox_SettingFiles->SelectedIndexChanged += gcnew System::EventHandler(this, &Window_Settings::listBox_SettingFiles_SelectedIndexChanged);
+			// 
+			// label3
+			// 
+			this->label3->AutoSize = true;
+			this->label3->Location = System::Drawing::Point(12, 125);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(81, 13);
+			this->label3->TabIndex = 7;
+			this->label3->Text = L"Profile selection";
+			this->label3->UseMnemonic = false;
+			// 
 			// Window_Settings
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(349, 150);
-			this->ControlBox = false;
+			this->ClientSize = System::Drawing::Size(349, 303);
+			this->Controls->Add(this->label3);
+			this->Controls->Add(this->listBox_SettingFiles);
 			this->Controls->Add(this->button_SaveExit);
 			this->Controls->Add(this->textBox_AppWindowName);
 			this->Controls->Add(label2);
@@ -129,5 +158,6 @@ namespace NotTAS {
 	private: System::Void checkBox_StartOnDetect_CheckedChanged(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void button_SaveExit_Click(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void textBox_ScriptPath_TextChanged(System::Object^ sender, System::EventArgs^ e);
+	private: System::Void listBox_SettingFiles_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 	};
 }

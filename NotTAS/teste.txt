@@ -1,2 +1,3 @@
-<0>mouse(right,pm_keydown)
-<0>mouse(left,pm_keydown)
+<0>setfps(2)
+<60>setfps(60)
+<61>stop()

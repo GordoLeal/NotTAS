@@ -36,6 +36,9 @@ namespace NotTAS {
 				delete components;
 			}
 		}
+	private:
+		ScriptManager& _sm = ScriptManager::GetInstance();
+		MainLogic& _ml = MainLogic::GetInstance();
 	private: System::Windows::Forms::GroupBox^ groupBox_AddMouse;
 	private: System::Windows::Forms::ComboBox^ comboBox_MClick_InputType;
 	private: System::Windows::Forms::Button^ button_MClick_AddInput;
@@ -830,6 +833,7 @@ namespace NotTAS {
 			this->groupBox_AddScript->TabIndex = 20;
 			this->groupBox_AddScript->TabStop = false;
 			this->groupBox_AddScript->Text = L"Add Script";
+			this->groupBox_AddScript->Visible = false;
 			// 
 			// textBox_AddScript
 			// 
@@ -923,5 +927,5 @@ namespace NotTAS {
 	private: System::Void listBox_FramesNumber_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void comboBox_KB_SpecialKey_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void button_AddScript_Click(System::Object^ sender, System::EventArgs^ e);
-	};
+};
 }
