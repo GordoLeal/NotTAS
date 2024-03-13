@@ -9,7 +9,6 @@
 
 void MainLogic::ExecuteScript(bool StartOnOpen)
 {
-
 	//wait for the program to start or start immediatly if possible
 	if (StartOnOpen)
 	{
@@ -62,23 +61,22 @@ void MainLogic::ExecuteScript(bool StartOnOpen)
 			return;
 		}
 
-		std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
-		loopThread = std::thread(&MainLogic::ExecutionThread, this);
+		//KeepLooping == true, it means the tool is already doing something, stop it.
+		if (!keepLooping)
+		{
+			std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
+			loopThread = std::thread(&MainLogic::ExecutionThread, this);
+		}
+		else
+		{
+			//Code Safety during development, in case the script get executed twice.
+			std::cout << "!! [ExecuteScript-WARNING] DEVELOPMENT WARNING: Stopping script from Execute Script Function." << std::endl;
+			StopExecution();
+		}
+		//std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
+		//loopThread = std::thread(&MainLogic::ExecutionThread, this);
 
 	}
-
-	////KeepLooping == true, it means the tool is already doing something, stop it.
-	//if (!keepLooping)
-	//{
-	//	std::cout << "[ExecuteScript-log] Starting thread." << std::endl;
-	//	loopThread = std::thread(&MainLogic::ExecutionThread, this);
-	//}
-	//else
-	//{
-	//	//Code Safety during development, in case the script get executed twice.
-	//	std::cout << "!! [ExecuteScript-WARNING] DEVELOPMENT WARNING: Stopping script from Execute Script Function." << std::endl;
-	//	StopExecution();
-	//}
 }
 
 /// <summary>
@@ -93,7 +91,7 @@ void MainLogic::ExecutionThread() {
 		printf("[ExecutionThread-log] current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
 		CheckLoad();
-		Sleep(60.0 / 60.0); //TODO: divide by the game framerate.
+		Sleep((1000/toolFPS)); //TODO: divide by the game framerate.
 		currentFrame++;
 	}
 }
@@ -181,6 +179,11 @@ unsigned long MainLogic::GetCurrentFrame()
 	return currentFrame;
 }
 
+void MainLogic::SetToolFPS(unsigned int fps)
+{
+	toolFPS = fps;
+}
+
 void MainLogic::InitialSetup()
 {
 	// Load names + functions into the ScriptManager
@@ -192,6 +195,8 @@ void MainLogic::InitialSetup()
 	_sm.AddScriptFunction("setfps", FuncInterpreter::SetGameFPS);
 	_sm.AddScriptFunction("waitloadstart", FuncInterpreter::WaitLoadStart);
 	_sm.AddScriptFunction("waitloadend", FuncInterpreter::WaitLoadEnd);
+	_sm.AddScriptFunction("movecursor", FuncInterpreter::MoveCursor); //TODO: add movecursor to the UI
+	_sm.AddScriptFunction("wait", FuncInterpreter::waitfor); //TODO: add movecursor to the UI
 
-	std::cout << ">> Initial Setup: Everything loaded." << std::endl;
+	std::cout << "[InitialSetup-log] Initial Setup: Everything loaded." << std::endl;
 }

@@ -12,8 +12,8 @@
 /// </summary>
 class FuncInterpreter
 {
+	//everything here is being setup at first load on MainLogic.cpp InitialSetup function
 public:
-
 	static void AddKeyboardInput(std::vector<std::string> args);
 	static void AddMouseInput(std::vector<std::string> args);
 	static void AddMouseMoveInput(std::vector<std::string> args);
@@ -22,6 +22,8 @@ public:
 	static void SetGameFPS(std::vector<std::string> args);
 	static void WaitLoadStart(std::vector<std::string> args);
 	static void WaitLoadEnd(std::vector<std::string> args);
+	static void MoveCursor(std::vector<std::string> args);
+	static void waitfor(std::vector<std::string> args);
 private:
 	MainLogic& _ml = MainLogic::GetInstance();
 	~FuncInterpreter() = default;

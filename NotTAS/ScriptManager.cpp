@@ -42,7 +42,6 @@ bool ScriptManager::LoadFile(const char* filename, std::vector<ScriptManager::Fi
 
 		if (posStartBracks == std::string::npos || posEndBracks == std::string::npos)
 		{
-			//TODO: better way to show errors
 			std::cout << ">> [LoadFile-ERROR]: missing brackets in: " << rLine << std::endl;
 			continue;
 		}
@@ -163,10 +162,16 @@ bool ForVectorComparisson(ScriptManager::FileLine& frame1, ScriptManager::FileLi
 	return (frame1.frame < frame2.frame);
 }
 
+bool ForCallsComparisson(ScriptManager::FrameCall& frame1, ScriptManager::FrameCall& frame2) {
+	return (frame1.frameNumber < frame2.frameNumber);
+}
+
 bool ScriptManager::SaveScript(const char* fileName)
 {
 	std::ofstream outfile;
 	outfile.open(fileName);
+	//sort everything before saving.
+	sort(allFramesCalls.begin(),allFramesCalls.end(),ForCallsComparisson);
 	for (FrameCall i : allFramesCalls) {
 		for (FrameFunction z : i.calls) {
 			if (z.funcNameA.at(0) == '!') {
@@ -190,7 +195,7 @@ bool ScriptManager::SaveScript(const char* fileName)
 		}
 	}
 	outfile.close();
-	std::cout << "[SaveScript-log] Saved with sucess!" << std::endl;
+	std::cout << "[SaveScript-log] Saved with success!" << std::endl;
 	return true;
 }
 
@@ -281,13 +286,14 @@ void ScriptManager::ReplaceFrameCallsFromList(FrameCall FrameCalls)
 }
 
 bool ScriptManager::GetFunctionsFromFrame(unsigned long frame, FrameCall* framecallStruct) {
-	for (int i = 0; i < allFramesCalls.size(); i++) {
-		if (allFramesCalls[i].frameNumber != frame) {
-			continue;
+	if (allFramesCalls.size() > 0)
+		for (int i = 0; i < allFramesCalls.size(); i++) {
+			if (allFramesCalls[i].frameNumber != frame) {
+				continue;
+			}
+			*framecallStruct = allFramesCalls[i];
+			return true;
 		}
-		*framecallStruct = allFramesCalls[i];
-		return true;
-	}
 	return false;
 }
 
@@ -366,10 +372,10 @@ bool ScriptManager::RemoveFunctionFromframe(unsigned int frame, FrameFunction fu
 		std::vector<FrameFunction> frameCalls = allFramesCalls[i].calls;
 		for (int j = 0; j < frameCalls.size(); j++) {
 			//find the function name.
-			if (frameCalls[j].funcNameA == function.funcNameA) 
-			{ 
+			if (frameCalls[j].funcNameA == function.funcNameA)
+			{
 				//is comment?
-				if (function.funcNameA.at(0) == '!') 
+				if (function.funcNameA.at(0) == '!')
 				{
 					if (allFramesCalls[i].calls.size() <= 1)
 						allFramesCalls.erase(allFramesCalls.begin() + i);
@@ -379,29 +385,29 @@ bool ScriptManager::RemoveFunctionFromframe(unsigned int frame, FrameFunction fu
 				}
 
 				//check if the args size is the same.
-				if (frameCalls[j].args.size() != function.args.size()) 
+				if (frameCalls[j].args.size() != function.args.size())
 				{
 					//if is not, this is not the one we want to delete
 					break;
 				}
 
 				// check if the function has args
-				if (function.args.size() > 0) 
-				{ 
+				if (function.args.size() > 0)
+				{
 					bool isEqual = true;
-					
+
 					//check if all the args and are the same.
-					for (int z = 0; z < function.args.size(); z++) { 
-						if (frameCalls[j].args[z] != function.args[z]) 
+					for (int z = 0; z < function.args.size(); z++) {
+						if (frameCalls[j].args[z] != function.args[z])
 						{
 							//if any arg is different we don't need to check for the next one, we already know is not the function we are looking for
 							isEqual = false;
-							break; 
+							break;
 						}
 					}
 
 					// if is not, check the next function if available
-					if (!isEqual) 
+					if (!isEqual)
 						continue;
 				}
 
@@ -420,9 +426,10 @@ bool ScriptManager::RemoveFunctionFromframe(unsigned int frame, FrameFunction fu
 
 void ScriptManager::GetFramesNumberList(std::vector<unsigned int>* list)
 {
-	for (FrameCall i : allFramesCalls) {
-		list->push_back(i.frameNumber);
-	}
+	if (allFramesCalls.size() > 0)
+		for (FrameCall i : allFramesCalls) {
+			list->push_back(i.frameNumber);
+		}
 }
 
 static bool IsSameFunctionName(ScriptManager::FuncStruct search, std::string toFind) { return toFind.compare(search.Name); }

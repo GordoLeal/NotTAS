@@ -1,5 +1,6 @@
 #include <thread>
 #include <iostream>
+#include "../SettingsFileManager.h"
 #include "Window_ControlPainel.h"
 using namespace NotTAS;
 
@@ -25,42 +26,49 @@ static void MarshalString(System::String^ s, std::string& os) {
 void Window_ControlPainel::AddFunction(ScriptManager::FrameFunction fFunction) {
 	//ScriptManager& sm = ScriptManager::GetInstance();
 	if (_sm.AddFunctionToFrame((unsigned int)numUD_EditingFrame->Value, fFunction)) {
-		std::cout << "[1] AddFunction: + " << fFunction.funcNameA << " to frame: " << (unsigned int)numUD_EditingFrame->Value << std::endl;
+		std::cout << "[AddFunction-log] Added: " << fFunction.funcNameA << " to frame: " << (unsigned int)numUD_EditingFrame->Value << std::endl;
 	}
-	UpdateCurrentEditingFrameTextbox();
+	UpdateCurrentEditingTextBoxes();
 }
 
-void Window_ControlPainel::UpdateCurrentEditingFrameTextbox() {
+void Window_ControlPainel::UpdateCurrentEditingTextBoxes()
+{
+	// This blocks any Update loops from happening;
+
 	listBox_EditingFrame->Items->Clear();
 	//ScriptManager& sm = ScriptManager::GetInstance();
 	ScriptManager::FrameCall frCalls;
 	_sm.GetFunctionsFromFrame((unsigned int)numUD_EditingFrame->Value, &frCalls);
-	for (ScriptManager::FrameFunction i : frCalls.calls) {
-		std::string buf = (char*)"";
-		if (i.funcNameA.at(0) == '!') {
-			buf += i.funcNameA;
-			listBox_EditingFrame->Items->Add(gcnew String(buf.data()));
-			continue;
-		}
-		buf += i.funcNameA + "(";
-		std::cout << "[log] UpdateCurrentEditingFrame:(" << i.funcNameA << ") have: (" << i.args.size() << ") args." << std::endl;
-		for (int j = 0; j < i.args.size(); j++) {
-			if (i.args[j].size() <= 0) {
-				std::cout << "[!] UpdateCurrentEditingFrame:" << i.funcNameA << " don't have value in arg:" << j << std::endl;
+	if (frCalls.calls.size() > 0)
+		for (ScriptManager::FrameFunction i : frCalls.calls) {
+			std::string buf = "";
+			if (i.funcNameA.at(0) == '!') {
+				buf += i.funcNameA;
+				listBox_EditingFrame->Items->Add(gcnew String(buf.data()));
 				continue;
 			}
-			buf += i.args[j];
-			std::cout << "[log] UpdateCurrentEditingFrame:(" << i.funcNameA << ") adding arg: (" << i.args[j] << ") at:" << j << std::endl;
-			if (j + 1 < i.args.size())
-				if (i.args[j + 1].length() > 0) {
-					buf += ",";
+			buf += i.funcNameA + "(";
+			std::cout << "[UpdateEditingFrame-log] (" << i.funcNameA << ") have: (" << i.args.size() << ") args." << std::endl;
+			for (int j = 0; j < i.args.size(); j++) {
+				if (i.args[j].size() <= 0) {
+					std::cout << "[UpdateEditingFrame-log]" << i.funcNameA << " don't have value in arg:" << j << std::endl;
+					continue;
 				}
+				buf += i.args[j];
+				std::cout << "[UpdateEditingFrame-log] (" << i.funcNameA << ") adding arg: (" << i.args[j] << ") at:" << j << std::endl;
+				if (j + 1 < i.args.size())
+					if (i.args[j + 1].length() > 0) {
+						buf += ",";
+					}
+			}
+			buf += ")";
+			listBox_EditingFrame->Items->Add(gcnew String(buf.data()));
 		}
-		buf += ")";
-		listBox_EditingFrame->Items->Add(gcnew String(buf.data()));
-	}
 
-	//Frames List
+	if (UIIsUpdating)
+		return;
+	UIIsUpdating = true;
+	int oldSel = listBox_FramesNumber->SelectedIndex;
 
 	listBox_FramesNumber->Items->Clear();
 	std::vector<unsigned int> i;
@@ -71,7 +79,22 @@ void Window_ControlPainel::UpdateCurrentEditingFrameTextbox() {
 			listBox_FramesNumber->Items->Add(a);
 		}
 	}
+	else
+	{
+		i.clear();
+	}
 
+	//if we select nothing to start, then do nothing.
+	if (oldSel > -1) {
+		// If the last selection is the last, keep the selection with the last object.
+		if (listBox_FramesNumber->Items->Count == oldSel)
+			listBox_FramesNumber->SelectedIndex = listBox_FramesNumber->Items->Count - 1;
+		else
+			listBox_FramesNumber->SelectedIndex = oldSel;
+	}
+
+
+	UIIsUpdating = false;
 }
 
 System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Object^ sender, System::EventArgs^ e)
@@ -82,6 +105,7 @@ System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Obje
 	if (!_ml.IsRunning() && !_ml.IsWaitingProcess()) {
 		std::cout << "[StartSystem-log] Starting..." << std::endl;
 		std::cout << _ml.ScriptName << std::endl;
+		_ml.SetToolFPS((unsigned int)numUD_ToolFPS->Value);
 		_ml.startingFrame = (int)numeric_StartFromFrame->Value;
 		_ml.ExecuteScript(checkBox_StartOnGameDetect->Checked);
 		if (checkBox_StartOnGameDetect->Checked) {
@@ -188,7 +212,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddKeyboardSpecialKey_Click(Sy
 	MarshalString(comboBox_KB_InputType->Text, fFunction.args[1]);
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddSpecialKeyboardKey-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -294,8 +318,7 @@ System::Void NotTAS::Window_ControlPainel::button_DeleteInput_Click(System::Obje
 
 			}
 		}
-		std::cout << "[log] End Delete" << std::endl;
-		UpdateCurrentEditingFrameTextbox();
+		UpdateCurrentEditingTextBoxes();
 	}
 	return System::Void();
 }
@@ -313,9 +336,11 @@ System::Void NotTAS::Window_ControlPainel::comboBox_SelectFunction_SelectedIndex
 	groupBox_WaitLoadEnd->Visible = false;
 	groupBox_Comment->Visible = false;
 	groupBox_AddScript->Visible = false;
+	groupBox_AddWait->Visible = false;
+	groupBox_AddMoveCursor->Visible = false;
 
 	//show only the necessary.
-	//i could use a switch here but c++ System::String switch is a pain, fuck it, just use a bunch of ifs... - Gordos
+	//i could use a switch here but c++ System::String switch is a pain, fuck it, just use a bunch of ifs. - Gordos
 	if (comboBox_SelectFunction->Text == gcnew String("keyboard")) { groupBox_AddKeyboard->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("mouse")) { groupBox_AddMouse->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("movemouse")) { groupBox_AddMoveMouse->Visible = true; }
@@ -326,6 +351,8 @@ System::Void NotTAS::Window_ControlPainel::comboBox_SelectFunction_SelectedIndex
 	if (comboBox_SelectFunction->Text == gcnew String("waitloadend")) { groupBox_WaitLoadEnd->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("comment")) { groupBox_Comment->Visible = true; }
 	if (comboBox_SelectFunction->Text == gcnew String("add script")) { groupBox_AddScript->Visible = true; }
+	if (comboBox_SelectFunction->Text == gcnew String("wait")) { groupBox_AddWait->Visible = true; }
+	if (comboBox_SelectFunction->Text == gcnew String("move cursor")) { groupBox_AddMoveCursor->Visible = true; }
 
 	return System::Void();
 }
@@ -344,7 +371,7 @@ System::Void NotTAS::Window_ControlPainel::button_MClick_AddInput_Click(System::
 	MarshalString(comboBox_MClick_InputType->Text, fFunction.args[1]);
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddMouseClick-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -368,7 +395,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddMoveMouse_Click(System::Obj
 	fFunction.args[1] = std::to_string((int)numericUD_MMove_Y->Value);
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddMoveMouse-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -389,7 +416,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddShowGame_Click(System::Obje
 	fFunction.funcNameA = "showgame";
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddShowGame-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -406,7 +433,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddStop_Click(System::Object^ 
 	fFunction.funcNameA = "stop";
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddStop-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -423,7 +450,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddWaitLoadStart_Click(System:
 	fFunction.funcNameA = "waitloadstart";
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddWaitLoad-Start-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -441,7 +468,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddWaitLoadEnd_Click(System::O
 	fFunction.funcNameA = "waitloadend";
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddWaitLoad-End-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -459,7 +486,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddSetFPS_Click(System::Object
 	MarshalString(numUD_SetFPS->Text, fFunction.args[0]);
 	//Just for console feedback
 	std::cout
-		<< "! Added:"
+		<< "[AddSetFPS-log] Added:"
 		<< fFunction.funcNameA
 		<< " to frame: "
 		<< (unsigned int)numUD_EditingFrame->Value
@@ -475,11 +502,12 @@ System::Void NotTAS::Window_ControlPainel::button_File_Save_Click(System::Object
 {
 	std::string filename;
 	MarshalString(textBox_File_Name->Text, filename);
+	SettingsFileManager::QuickSaveText("LastSavedFile.txt", filename);
 	filename += ".txt";
 	if (_sm.SaveScript(filename.data())) {
 		MessageBoxA(NULL, "File Saved", "Not TAS", MB_OK);
 	}
-	UpdateCurrentEditingFrameTextbox();
+	UpdateCurrentEditingTextBoxes();
 	return System::Void();
 }
 
@@ -494,7 +522,7 @@ System::Void NotTAS::Window_ControlPainel::button_File_Load_Click(System::Object
 	MarshalString(textBox_File_Name->Text, scriptfilename);
 	_ml.ScriptName = scriptfilename + ".txt";
 	_ml.LoadTASSCript();
-	UpdateCurrentEditingFrameTextbox();
+	UpdateCurrentEditingTextBoxes();
 	return System::Void();
 }
 
@@ -517,11 +545,11 @@ System::Void NotTAS::Window_ControlPainel::button_AddComment_Click(System::Objec
 
 System::Void NotTAS::Window_ControlPainel::listBox_FramesNumber_SelectedIndexChanged(System::Object^ sender, System::EventArgs^ e)
 {
-	if (listBox_FramesNumber->SelectedIndex > -1) {
+	if (listBox_FramesNumber->SelectedIndex > -1 && !UIIsUpdating) {
 		std::string a;
 		MarshalString(listBox_FramesNumber->Text, a);
 		numUD_EditingFrame->Value = std::stoi(a);
-		UpdateCurrentEditingFrameTextbox();
+		UpdateCurrentEditingTextBoxes();
 	}
 
 	return System::Void();
@@ -545,10 +573,43 @@ System::Void NotTAS::Window_ControlPainel::button_AddScript_Click(System::Object
 	String^ finText = textBox_AddScript->Text + ".txt";
 	std::string fileLoc;
 	MarshalString(finText, fileLoc);
-	(unsigned int)numUD_EditingFrame->Value;
 	_sm.LoadAndAddScriptToFrame((char*)fileLoc.c_str(), (unsigned int)numUD_EditingFrame->Value);
 	button_AddScript->Enabled = true;
-	UpdateCurrentEditingFrameTextbox();
+	UpdateCurrentEditingTextBoxes();
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::button_AddWait_Click(System::Object^ sender, System::EventArgs^ e)
+{
+	ScriptManager::FrameFunction fFunction;
+	fFunction.funcNameA = "wait";
+	fFunction.args.resize(1);
+	MarshalString(numUD_AddWait->Value.ToString(), fFunction.args[0]);
+	//Just for console feedback
+	std::cout
+		<< "[AddWait-log] Added:"
+		<< fFunction.funcNameA
+		<< " to frame: "
+		<< (unsigned int)numUD_EditingFrame->Value
+		<< std::endl;
+	AddFunction(fFunction);
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::button_AddMoveCursor_Click(System::Object^ sender, System::EventArgs^ e)
+{
+	ScriptManager::FrameFunction fFunction;
+	fFunction.funcNameA = "movecursor";
+	fFunction.args.resize(2);
+	MarshalString(numUD_MoveCursor_X->Value.ToString(), fFunction.args[0]);
+	MarshalString(numUD_MoveCursor_Y->Value.ToString(), fFunction.args[1]);
+	std::cout
+		<< "[AddMoveCursor-log] Added:"
+		<< fFunction.funcNameA
+		<< " to frame: "
+		<< (unsigned int)numUD_EditingFrame->Value
+		<< std::endl;
+	AddFunction(fFunction);
 	return System::Void();
 }
 
@@ -564,5 +625,5 @@ System::Void NotTAS::Window_ControlPainel::textBox_KB_Key_TextChanged(System::Ob
 
 System::Void NotTAS::Window_ControlPainel::numUD_EditingFrame_ValueChanged(System::Object^ sender, System::EventArgs^ e)
 {
-	UpdateCurrentEditingFrameTextbox();
+	UpdateCurrentEditingTextBoxes();
 }

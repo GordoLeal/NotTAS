@@ -107,6 +107,5 @@ System::Void NotTAS::Window_Settings::listBox_SettingFiles_SelectedIndexChanged(
 	_ml.loadingOffsets = info.LoadingOffsets;
 	wcout << "[Settingsfile_SelectedIndexChanged-Log] appexename:"<< _ml.AppExeName  << "\n";
 	cout << "[Settingsfile_SelectedIndexChanged-Log] appwindowname:" << _ml.AppWindowName << endl;
-	cout << info.WindowName << endl;
 	return System::Void();
 }

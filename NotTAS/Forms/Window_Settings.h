@@ -149,6 +149,7 @@ namespace NotTAS {
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
 			this->Name = L"Window_Settings";
+			this->ShowIcon = false;
 			this->Text = L"Not Tas - Settings";
 			this->ResumeLayout(false);
 			this->PerformLayout();

@@ -19,6 +19,8 @@ public:
 		std::vector<DWORD> FPSOffsets;
 	};
 	static void LoadSettingsFile(const char* filepath, SettingsInfo & info);
+	static void QuickSaveText(const char* filepath,std::string text);
+	static bool QuickLoadText(const char* filepath,std::string & text);
 private:
 };
 #endif

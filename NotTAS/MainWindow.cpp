@@ -43,7 +43,6 @@ MainWindow::MainWindow() {
 
 	if (hwnd == 0) {
 		std::cout << "shit hit the fan" << std::endl;
-		//TODO: better way of handling this error.
 		return;
 	}
 

@@ -32,7 +32,7 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
 /// <returns></returns>
 bool ProcessAccess::SetGameHandle(const wchar_t* ExeName, char* gameWindowName, bool IgnoreWarning)
 {
-	std::wcout << "SetGameHandle:" << ExeName << "|" << gameWindowName << std::endl;
+	std::wcout << "[SetGameHandle-log]:" << ExeName << "|" << gameWindowName << std::endl;
 	int processID = FindProcbyName(ExeName);
 	ProcessAccess& pa = ProcessAccess::GetInstance();
 
@@ -121,7 +121,7 @@ int ProcessAccess::FindProcbyName(const wchar_t* name) {
 
 	do {
 		if (_wcsicmp(singleProcess.szExeFile, name) == 0) {
-			printf("FOUND Exe: %S \n", singleProcess.szExeFile);
+			printf("[FindProcbyName-log] FOUND Exe: %S \n", singleProcess.szExeFile);
 			DWORD processID = singleProcess.th32ProcessID;
 			CloseHandle(h);
 			return processID;
@@ -144,7 +144,7 @@ intptr_t ProcessAccess::GetBaseAddress(DWORD id, const wchar_t* name) {
 	intptr_t baseAddress = 0x0;
 	do {
 		if (wcscmp(singlemodule.szModule, name) == 0) {
-			printf("FOUND module: %S \n", singlemodule.szModule);
+			printf("[GetBaseAddress-log] FOUND module: %S \n", singlemodule.szModule);
 			baseAddress = (intptr_t)singlemodule.modBaseAddr;
 		}
 

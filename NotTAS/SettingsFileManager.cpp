@@ -110,4 +110,33 @@ void SettingsFileManager::LoadSettingsFile(const char* filepath, SettingsInfo& i
 		}
 		
 	}
+	filestream.close();
+}
+
+void SettingsFileManager::QuickSaveText(const char* filepath, std::string text)
+{
+	std::string s = "Settings/";
+	s.append(filepath);
+	std::ofstream outfile(s);
+	outfile << text;
+	outfile.close();
+
+}
+
+bool SettingsFileManager::QuickLoadText(const char* filepath, std::string& text)
+{
+	std::string s = "Settings/";
+	s.append(filepath);
+	std::fstream fileStream(s);
+	if (!fileStream.is_open()) {
+		std::cout << ">> [QuickLoadText-ERROR]: file don't exist." << std::endl;
+		return false;
+	}
+
+	std::string lineText;
+	while (std::getline(fileStream, lineText)) {
+		text.append(lineText);
+	}
+	fileStream.close();
+	return true;
 }

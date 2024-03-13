@@ -1,3 +1,0 @@
-<0>setfps(2)
-<60>setfps(60)
-<61>stop()

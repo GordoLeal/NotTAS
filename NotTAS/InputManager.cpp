@@ -246,8 +246,7 @@ InputManager::KeyEvents InputManager::ConvertToKeyEventHelper(std::string in)
 	else if (keyEventString == "pm_movemouse") { kEvent = InputManager::KeyEvents::PM_MoveMouse; }
 	else if (keyEventString == "si_movemouse") { kEvent = InputManager::KeyEvents::SI_MoveMouse; }
 	else {
-		printf(">> ERROR: invalid string while trying to convert parameter as KeyEvent in ConvertToKeyEventHelper: %s", in);
-		//TODO: Better way to show errors to the user
+		printf(">> [ConvertToKeyEventHelper-ERROR]: invalid string while trying to convert parameter as KeyEvent in ConvertToKeyEventHelper: %s", in);
 		return InputManager::KeyEvents::err;
 	}
 
@@ -268,8 +267,7 @@ InputManager::SpecialKeyboardInputs InputManager::ConvertToSpecialKeyboardKeyHel
 	else if (keyEventString == "esc") { kEvent = InputManager::SpecialKeyboardInputs::Esc; }
 	else if (keyEventString == "enter") { kEvent = InputManager::SpecialKeyboardInputs::Enter; }
 	else {
-		printf(">> ERROR: invalid string while trying to convert parameter as SpecialKey in ConvertToSpecialKeyboardKeyHelper %s", in);
-		//TODO: Better way to show errors to the user
+		printf(">> [ConvertToSpecialkeyboardKeyHelper-ERROR]: invalid string while trying to convert parameter as SpecialKey in ConvertToSpecialKeyboardKeyHelper %s", in);
 		return InputManager::SpecialKeyboardInputs::errSK;
 	}
 
@@ -285,8 +283,7 @@ InputManager::MouseInputs InputManager::ConvertToMouseClick(std::string in)
 	else if (kEventString == "middle") { outMI = InputManager::MouseInputs::MiddleClick; }
 	else
 	{
-		printf(">> ERROR: invalid string while trying to convert parameter as SpecialKey in ConvertToMouseClick %s", in);
-		//TODO: Better way to show errors to the user
+		printf(">> [ConvertToMouseClick-ERROR]: invalid string while trying to convert parameter as SpecialKey in ConvertToMouseClick %s", in);
 		outMI = InputManager::MouseInputs::errM;
 	}
 

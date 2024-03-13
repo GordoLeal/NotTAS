@@ -29,6 +29,7 @@ private:
 	bool isInLoad = false;
 	void CheckLoad();
 	bool foas = false;
+	unsigned int toolFPS = 60;
 
 public:
 	//Memory
@@ -61,7 +62,7 @@ public:
 	bool IsRunning();
 	bool IsWaitingProcess();
 	unsigned long GetCurrentFrame();
-
+	void SetToolFPS(unsigned int fps);
 	void ExecuteScript(bool StartOnOpen);
 };
 #endif // !MAINLOGIC_H
