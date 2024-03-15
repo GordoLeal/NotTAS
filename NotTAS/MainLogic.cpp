@@ -86,12 +86,13 @@ void MainLogic::ExecuteScript(bool StartOnOpen)
 void MainLogic::ExecutionThread() {
 	keepLooping = true;
 	currentFrame = 0;
+
 	while (keepLooping)
 	{
 		printf("[ExecutionThread-log] current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
 		CheckLoad();
-		Sleep((1000/toolFPS)); //TODO: divide by the game framerate.
+		Sleep((1000 / toolFPS)); //TODO: divide by the game framerate.
 		currentFrame++;
 	}
 }
@@ -106,13 +107,23 @@ void MainLogic::CheckLoad() {
 		intptr_t loadAddress;
 		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03169448, offsets);
 		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), afinalAddress, loadingOffsets);
-		while (!isInLoad && keepLooping)
-		{
-			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
-			std::cout << "[waitload-start-log] Waiting for load to start: " << isInLoad << std::endl;
-			//this delay is necessary otherwise IsInLoad is gonna byte flip at random. no idea what causes it
-			Sleep(1);
+		isInLoad = false;
+		//Compiler issue? isInLoad returning as true??
+		if (!isInLoad && keepLooping) {
+			do
+			{
+				isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
+				std::cout << "[waitload-start-log] Waiting for load to start: " << isInLoad << std::endl;
+				//this delay is necessary otherwise IsInLoad is gonna byte flip at random. no idea what causes it
+				Sleep(1);
+			} while (!isInLoad && keepLooping);
 		}
+		else
+		{
+			std::cout << ">> [waitload-start-ERROR] CALLED FOR LOAD START BUT NOT POSSIBLE TO START LOOP." << std::endl;
+			std::cout << ">> [waitload-start-ERROR] Is in load:" << isInLoad << " | keepLooping:" << keepLooping << std::endl;
+		}
+
 		//Load started, now we wait for it to end;
 		WaitingLoadingToStart = false;
 	}
