@@ -3,6 +3,7 @@
 #include <vector>
 #include <iostream>
 #include <thread>
+#include <chrono>
 #include "MainLogic.h"
 #include "FuncInterpreter.h"
 #include "Access/MemoryAccess.h"
@@ -79,6 +80,18 @@ void MainLogic::ExecuteScript(bool StartOnOpen)
 	}
 }
 
+void MySleep(double Milliseconds) {
+	using namespace std::chrono;
+	auto start = system_clock::now();
+	bool test = false;
+	do {
+		auto end = system_clock::now();
+		duration<double> passing = end - start;
+		if (passing.count() >= Milliseconds)
+			test = true;
+	} while (!test);
+}
+
 /// <summary>
 /// Main Execution thread for reading the script and doing inputs
 /// </summary>
@@ -86,13 +99,32 @@ void MainLogic::ExecuteScript(bool StartOnOpen)
 void MainLogic::ExecutionThread() {
 	keepLooping = true;
 	currentFrame = 0;
+	using namespace std::chrono;
+	auto start = system_clock::now();
 
 	while (keepLooping)
 	{
+
 		printf("[ExecutionThread-log] current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
 		CheckLoad();
-		Sleep((1000 / toolFPS)); //TODO: divide by the game framerate.
+		if (currentFrame == 59) {
+			auto end = system_clock::now();
+
+			duration<double> elapsed_seconds = end - start;
+			std::cout << "[60 frame]" << elapsed_seconds.count() << std::endl;
+		}
+		if (currentFrame == 119) {
+			auto end = system_clock::now();
+
+			duration<double> elapsed_seconds = end - start;
+			std::cout << "[120 frame]" << elapsed_seconds.count() << std::endl;
+		}
+
+		double teste = 1.0000f / toolFPS;
+		std::cout << "[valor]" << teste << std::endl;
+		MySleep(teste);
+		//Sleep(teste);
 		currentFrame++;
 	}
 }
@@ -125,10 +157,10 @@ void MainLogic::CheckLoad() {
 	{
 		//std::vector<DWORD> offsets{ 0x20,0x1D0 };
 		intptr_t loadAddress;
-		
+
 		//loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), _pa.GetGameBaseMemoryAddress() + 0x03319550, offsets);
 		loadAddress = MemoryAccess::GetAddressFromOffsets(_pa.GetGameHwnd(), afinalAddress, loadingOffsets);
-		
+
 		do
 		{
 			isInLoad = MemoryAccess::GetByteInAddress(_pa.GetGameHwnd(), loadAddress);
