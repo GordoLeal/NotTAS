@@ -80,12 +80,12 @@ void MainLogic::ExecuteScript(bool StartOnOpen)
 	}
 }
 
-void MySleep(double Milliseconds) {
+void static MySleep(double Milliseconds) {
 	using namespace std::chrono;
-	auto start = system_clock::now();
+	system_clock::time_point start = system_clock::now();
 	bool test = false;
 	do {
-		auto end = system_clock::now();
+		system_clock::time_point end = system_clock::now();
 		duration<double> passing = end - start;
 		if (passing.count() >= Milliseconds)
 			test = true;
@@ -99,32 +99,29 @@ void MySleep(double Milliseconds) {
 void MainLogic::ExecutionThread() {
 	keepLooping = true;
 	currentFrame = 0;
-	using namespace std::chrono;
-	auto start = system_clock::now();
-
+	//using namespace std::chrono;
+	//system_clock::time_point start = system_clock::now();
 	while (keepLooping)
 	{
-
 		printf("[ExecutionThread-log] current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
 		CheckLoad();
-		if (currentFrame == 59) {
-			auto end = system_clock::now();
+		//if (currentFrame == 59) {
+		//	auto end = system_clock::now();
 
-			duration<double> elapsed_seconds = end - start;
-			std::cout << "[60 frame]" << elapsed_seconds.count() << std::endl;
-		}
-		if (currentFrame == 119) {
-			auto end = system_clock::now();
+		//	duration<double> elapsed_seconds = end - start;
+		//	std::cout << "[60 frame]" << elapsed_seconds.count() << std::endl;
+		//}
+		//if (currentFrame == 119) {
+		//	auto end = system_clock::now();
 
-			duration<double> elapsed_seconds = end - start;
-			std::cout << "[120 frame]" << elapsed_seconds.count() << std::endl;
-		}
+		//	duration<double> elapsed_seconds = end - start;
+		//	std::cout << "[120 frame]" << elapsed_seconds.count() << std::endl;
+		//}
 
-		double teste = 1.0000f / toolFPS;
-		std::cout << "[valor]" << teste << std::endl;
-		MySleep(teste);
-		//Sleep(teste);
+		//double teste = 1.0000f / toolFPS;
+		//std::cout << "[valor]" << teste << std::endl;
+		MySleep(1.0000f / toolFPS);
 		currentFrame++;
 	}
 }

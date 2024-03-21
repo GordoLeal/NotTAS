@@ -950,6 +950,15 @@ namespace NotTAS {
 			this->numUD_EditingFrame->TabIndex = 16;
 			this->numUD_EditingFrame->ValueChanged += gcnew System::EventHandler(this, &Window_ControlPainel::numUD_EditingFrame_ValueChanged);
 			// 
+			// label11
+			// 
+			label11->AutoSize = true;
+			label11->Location = System::Drawing::Point(536, 332);
+			label11->Name = L"label11";
+			label11->Size = System::Drawing::Size(54, 13);
+			label11->TabIndex = 21;
+			label11->Text = L"Tool FPS:";
+			// 
 			// Button_OpenSettings
 			// 
 			this->Button_OpenSettings->Location = System::Drawing::Point(411, 353);
@@ -1002,21 +1011,12 @@ namespace NotTAS {
 			// 
 			this->numUD_ToolFPS->Increment = System::Decimal(gcnew cli::array< System::Int32 >(4) { 10, 0, 0, 0 });
 			this->numUD_ToolFPS->Location = System::Drawing::Point(596, 330);
-			this->numUD_ToolFPS->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 500, 0, 0, 0 });
+			this->numUD_ToolFPS->Maximum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1000, 0, 0, 0 });
 			this->numUD_ToolFPS->Minimum = System::Decimal(gcnew cli::array< System::Int32 >(4) { 1, 0, 0, 0 });
 			this->numUD_ToolFPS->Name = L"numUD_ToolFPS";
 			this->numUD_ToolFPS->Size = System::Drawing::Size(92, 20);
 			this->numUD_ToolFPS->TabIndex = 20;
 			this->numUD_ToolFPS->Value = System::Decimal(gcnew cli::array< System::Int32 >(4) { 60, 0, 0, 0 });
-			// 
-			// label11
-			// 
-			label11->AutoSize = true;
-			label11->Location = System::Drawing::Point(536, 332);
-			label11->Name = L"label11";
-			label11->Size = System::Drawing::Size(54, 13);
-			label11->TabIndex = 21;
-			label11->Text = L"Tool FPS:";
 			// 
 			// Window_ControlPainel
 			// 
