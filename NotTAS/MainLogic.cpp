@@ -7,6 +7,7 @@
 #include "MainLogic.h"
 #include "FuncInterpreter.h"
 #include "Access/MemoryAccess.h"
+using namespace std::chrono;
 
 void MainLogic::ExecuteScript(bool StartOnOpen)
 {
@@ -80,16 +81,16 @@ void MainLogic::ExecuteScript(bool StartOnOpen)
 	}
 }
 
-void static MySleep(double Milliseconds) {
-	using namespace std::chrono;
-	system_clock::time_point start = system_clock::now();
+void static MySleep(system_clock::time_point start, double Milliseconds) {
+	system_clock::time_point end;
 	bool test = false;
+
 	do {
-		system_clock::time_point end = system_clock::now();
+		end = system_clock::now();
 		duration<double> passing = end - start;
 		if (passing.count() >= Milliseconds)
 			test = true;
-	} while (!test);
+	} while (!test); 
 }
 
 /// <summary>
@@ -99,29 +100,38 @@ void static MySleep(double Milliseconds) {
 void MainLogic::ExecutionThread() {
 	keepLooping = true;
 	currentFrame = 0;
-	//using namespace std::chrono;
-	//system_clock::time_point start = system_clock::now();
+	float timeBetweenFrames = 1.0000f / toolFPS;
+	float sleepTime;
+
+	// For finding the time it took to execute the current frame before sleeping
+	system_clock::time_point frameStart;
+	system_clock::time_point frameEnd;
+
+	// For the "60 frame" tests
+	system_clock::time_point end;
+	duration<double> elapsed_seconds;
+	system_clock::time_point start = system_clock::now();
+
+	// Staring time of the first frame
+	frameStart = system_clock::now();
+
 	while (keepLooping)
 	{
 		printf("[ExecutionThread-log] current frame: %lu \n", currentFrame);
 		ExecuteFrame(currentFrame);
 		CheckLoad();
-		//if (currentFrame == 59) {
-		//	auto end = system_clock::now();
+		
+		// Calculate how long the current frame took to execute, and subtract it 
+		// from the desired time there should be in between frames.
+		// Do this before sleeping to sleep for a more accurate duration.
+		frameEnd = system_clock::now();
+		elapsed_seconds = frameEnd - frameStart;
+		sleepTime = timeBetweenFrames - elapsed_seconds.count();
+		MySleep(frameEnd, sleepTime);
 
-		//	duration<double> elapsed_seconds = end - start;
-		//	std::cout << "[60 frame]" << elapsed_seconds.count() << std::endl;
-		//}
-		//if (currentFrame == 119) {
-		//	auto end = system_clock::now();
+		// Starting time of the next frame
+		frameStart = system_clock::now();
 
-		//	duration<double> elapsed_seconds = end - start;
-		//	std::cout << "[120 frame]" << elapsed_seconds.count() << std::endl;
-		//}
-
-		//double teste = 1.0000f / toolFPS;
-		//std::cout << "[valor]" << teste << std::endl;
-		MySleep(1.0000f / toolFPS);
 		currentFrame++;
 	}
 }

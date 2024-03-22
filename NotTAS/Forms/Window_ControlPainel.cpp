@@ -4,6 +4,7 @@
 #include "Window_ControlPainel.h"
 using namespace NotTAS;
 
+
 //
 //ScriptManager& _sm = ScriptManager::GetInstance();
 //MainLogic& _ml = MainLogic::GetInstance();
@@ -30,6 +31,9 @@ void Window_ControlPainel::AddFunction(ScriptManager::FrameFunction fFunction) {
 	}
 	UpdateCurrentEditingTextBoxes();
 }
+
+
+
 
 void Window_ControlPainel::UpdateCurrentEditingTextBoxes()
 {
@@ -111,8 +115,7 @@ System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Obje
 		if (checkBox_StartOnGameDetect->Checked) {
 			checkBox_StartOnGameDetect->Enabled = false;
 		}
-		if (!bWorker->IsBusy && !bWorker->CancellationPending)
-			bWorker->RunWorkerAsync();
+
 	}
 	else
 	{
@@ -142,28 +145,27 @@ System::Void NotTAS::Window_ControlPainel::numeric_StartFromFrame_ValueChanged(S
 
 System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 {
+	std::cout << "[bWorker_DoWork-log] Starting..." << std::endl;
 	while (true) {
 		if (bWorker->CancellationPending) {
 			e->Cancel = true;
 			break;
+		};
+		if (_ml.IsRunning() || _ml.IsWaitingProcess()) {
+			this->Invoke(gcnew  Action<String^>(this, &NotTAS::Window_ControlPainel::UpdateButtonText), "Stop");
+		}
+		else
+		{
+			this->Invoke(gcnew  Action<String^>(this, &NotTAS::Window_ControlPainel::UpdateButtonText), "Play");
 		}
 		System::Threading::Thread::Sleep(100);
-		bWorker->ReportProgress(1);
 	}
 	return System::Void();
 }
 
-System::Void NotTAS::Window_ControlPainel::bWorker_ProgressChanged(System::Object^ sender, System::ComponentModel::ProgressChangedEventArgs^ e)
+void NotTAS::Window_ControlPainel::UpdateButtonText(String^ text)
 {
-	if (_ml.IsRunning() || _ml.IsWaitingProcess()) {
-		Button_StartSystem->Text = gcnew String("Stop");
-	}
-	else
-	{
-		Button_StartSystem->Text = gcnew String("Play");
-		bWorker->CancelAsync();
-	}
-	return System::Void();
+	Button_StartSystem->Text = text;
 }
 
 System::Void NotTAS::Window_ControlPainel::bWorker_WorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)

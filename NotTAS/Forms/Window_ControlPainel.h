@@ -28,7 +28,11 @@ namespace NotTAS {
 			if (SettingsFileManager::QuickLoadText("LastSavedFile.txt", savedF))
 				textBox_File_Name->Text = gcnew String(savedF.c_str());
 			UpdateCurrentEditingTextBoxes();
+			//bWorker->WorkerReportsProgress = true;
+			////bWorker->WorkerSupportsCancellation = true;
+			bWorker->RunWorkerAsync();
 		}
+		void UpdateButtonText(String^ text);
 	protected:
 		/// <summary>
 		/// Clean up any resources being used.
@@ -92,8 +96,8 @@ namespace NotTAS {
 
 
 		   bool UIIsUpdating = false;
-		void UpdateCurrentEditingTextBoxes();
-		void AddFunction(ScriptManager::FrameFunction);
+		   void UpdateCurrentEditingTextBoxes();
+		   void AddFunction(ScriptManager::FrameFunction);
 	private: System::Windows::Forms::Button^ Button_OpenSettings;
 	public: System::Windows::Forms::Button^ Button_StartSystem;
 	private: System::Windows::Forms::CheckBox^ checkBox_StartOnGameDetect;
@@ -1004,7 +1008,6 @@ namespace NotTAS {
 			this->bWorker->WorkerReportsProgress = true;
 			this->bWorker->WorkerSupportsCancellation = true;
 			this->bWorker->DoWork += gcnew System::ComponentModel::DoWorkEventHandler(this, &Window_ControlPainel::bWorker_DoWork);
-			this->bWorker->ProgressChanged += gcnew System::ComponentModel::ProgressChangedEventHandler(this, &Window_ControlPainel::bWorker_ProgressChanged);
 			this->bWorker->RunWorkerCompleted += gcnew System::ComponentModel::RunWorkerCompletedEventHandler(this, &Window_ControlPainel::bWorker_WorkerCompleted);
 			// 
 			// numUD_ToolFPS
@@ -1083,7 +1086,6 @@ namespace NotTAS {
 	private: System::Void Button_OpenSettings_Click(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void numeric_StartFromFrame_ValueChanged(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void bWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e);
-	private: System::Void bWorker_ProgressChanged(System::Object^ sender, System::ComponentModel::ProgressChangedEventArgs^ e);
 	private: System::Void bWorker_WorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e);
 	private: System::Void textBox_KB_Key_TextChanged(System::Object^ sender, System::EventArgs^ e);
 	private: System::Void button_DeleteInput_Click(System::Object^ sender, System::EventArgs^ e);
