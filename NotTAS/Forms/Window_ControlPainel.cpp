@@ -25,22 +25,17 @@ static void MarshalString(System::String^ s, std::string& os) {
 }
 
 void Window_ControlPainel::AddFunction(ScriptManager::FrameFunction fFunction) {
-	//ScriptManager& sm = ScriptManager::GetInstance();
 	if (_sm.AddFunctionToFrame((unsigned int)numUD_EditingFrame->Value, fFunction)) {
 		std::cout << "[AddFunction-log] Added: " << fFunction.funcNameA << " to frame: " << (unsigned int)numUD_EditingFrame->Value << std::endl;
 	}
 	UpdateCurrentEditingTextBoxes();
 }
 
-
-
-
 void Window_ControlPainel::UpdateCurrentEditingTextBoxes()
 {
 	// This blocks any Update loops from happening;
 
 	listBox_EditingFrame->Items->Clear();
-	//ScriptManager& sm = ScriptManager::GetInstance();
 	ScriptManager::FrameCall frCalls;
 	_sm.GetFunctionsFromFrame((unsigned int)numUD_EditingFrame->Value, &frCalls);
 	if (frCalls.calls.size() > 0)
@@ -101,33 +96,40 @@ void Window_ControlPainel::UpdateCurrentEditingTextBoxes()
 	UIIsUpdating = false;
 }
 
+void NotTAS::Window_ControlPainel::DoStartExecution()
+{
+	std::cout << "[StartSystem-log] Starting..." << std::endl;
+	std::cout << _ml.ScriptName << std::endl;
+	_ml.SetToolFPS((unsigned int)numUD_ToolFPS->Value);
+	_ml.startingFrame = (int)numeric_StartFromFrame->Value;
+	_ml.ExecuteScript(checkBox_StartOnGameDetect->Checked);
+	if (checkBox_StartOnGameDetect->Checked) {
+		checkBox_StartOnGameDetect->Enabled = false;
+	}
+}
+
+void NotTAS::Window_ControlPainel::DoStopExecution() {
+	std::cout << "[StartSystem-log] Stopping..." << std::endl;
+	checkBox_StartOnGameDetect->Enabled = true;
+	_ml.StopExecution();
+}
+
 System::Void NotTAS::Window_ControlPainel::Button_StartSystem_Click(System::Object^ sender, System::EventArgs^ e)
 {
 	// Play button
 	Button_StartSystem->Enabled = false;
 
 	if (!_ml.IsRunning() && !_ml.IsWaitingProcess()) {
-		std::cout << "[StartSystem-log] Starting..." << std::endl;
-		std::cout << _ml.ScriptName << std::endl;
-		_ml.SetToolFPS((unsigned int)numUD_ToolFPS->Value);
-		_ml.startingFrame = (int)numeric_StartFromFrame->Value;
-		_ml.ExecuteScript(checkBox_StartOnGameDetect->Checked);
-		if (checkBox_StartOnGameDetect->Checked) {
-			checkBox_StartOnGameDetect->Enabled = false;
-		}
 
+		DoStartExecution();
 	}
 	else
 	{
-		std::cout << "[StartSystem-log] Stopping..." << std::endl;
-		checkBox_StartOnGameDetect->Enabled = true;
-		_ml.StopExecution();
+		DoStopExecution();
 	}
 	Button_StartSystem->Enabled = true;
 	return System::Void();
 }
-
-
 
 System::Void NotTAS::Window_ControlPainel::Button_OpenSettings_Click(System::Object^ sender, System::EventArgs^ e)
 {
@@ -145,14 +147,17 @@ System::Void NotTAS::Window_ControlPainel::numeric_StartFromFrame_ValueChanged(S
 
 System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 {
+	// i really don't understand why, but if this code don't have this line output to the console, nothing works in this loop. Help. -Gordo
 	std::cout << "[bWorker_DoWork-log] Starting..." << std::endl;
 	while (true) {
 		if (bWorker->CancellationPending) {
 			e->Cancel = true;
 			break;
-		};
+		}
+		this->Invoke(gcnew  Action(this, &NotTAS::Window_ControlPainel::CheckPlayStopKeyPress));
 		if (_ml.IsRunning() || _ml.IsWaitingProcess()) {
 			this->Invoke(gcnew  Action<String^>(this, &NotTAS::Window_ControlPainel::UpdateButtonText), "Stop");
+
 		}
 		else
 		{
@@ -166,6 +171,21 @@ System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender
 void NotTAS::Window_ControlPainel::UpdateButtonText(String^ text)
 {
 	Button_StartSystem->Text = text;
+}
+
+void NotTAS::Window_ControlPainel::CheckPlayStopKeyPress()
+{
+	if (GetKeyState(shortcutkey) & 0x8000)
+	{
+		if (!_ml.IsRunning() && !_ml.IsWaitingProcess()) 
+		{
+			DoStartExecution();
+		}
+		else
+		{
+			DoStopExecution();
+		}
+	}
 }
 
 System::Void NotTAS::Window_ControlPainel::bWorker_WorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
@@ -524,6 +544,7 @@ System::Void NotTAS::Window_ControlPainel::button_File_Load_Click(System::Object
 	MarshalString(textBox_File_Name->Text, scriptfilename);
 	_ml.ScriptName = scriptfilename + ".txt";
 	_ml.LoadTASSCript();
+	listBox_FramesNumber->SelectedIndex = -1;
 	UpdateCurrentEditingTextBoxes();
 	return System::Void();
 }

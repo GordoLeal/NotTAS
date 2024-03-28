@@ -24,15 +24,44 @@ namespace NotTAS {
 			InitializeComponent();
 			Window_Settings^ settings = gcnew Window_Settings;
 			settings->ShowDialog();
+			// Last Saved File
 			std::string savedF;
 			if (SettingsFileManager::QuickLoadText("LastSavedFile.txt", savedF))
 				textBox_File_Name->Text = gcnew String(savedF.c_str());
+			// First setup for Text Boxes
 			UpdateCurrentEditingTextBoxes();
-			//bWorker->WorkerReportsProgress = true;
-			////bWorker->WorkerSupportsCancellation = true;
+			// Shortcut Setup
+			std::string quickplayshortcut;
+			if (SettingsFileManager::QuickLoadText("QuickPlayShorcut.txt", quickplayshortcut))
+			{
+				std::cout << "[Initial Main Window Load] Loading Quick Play Shortcut" << std::endl;
+				try {
+					int t = std::stoi(quickplayshortcut, nullptr, 16);
+					if (t >= 1 && t <= 254)
+					{
+						//valid
+						shortcutkey = t;
+					}
+				}
+				catch (std::invalid_argument) {
+					std::cout << ">> [Initial Main Window Load] INVALID SHORTCUT, SET TO DEFAULT [PAGEUP] BUTTON" << std::endl;
+				}
+			}
+			// Background workers
 			bWorker->RunWorkerAsync();
 		}
+	private:
+		/// <summary>
+		/// Update the play button text
+		/// </summary>
 		void UpdateButtonText(String^ text);
+		/// <summary>
+		/// Check if the stop key have been pressed
+		/// </summary>
+		void CheckPlayStopKeyPress();
+		void DoStartExecution();
+		void DoStopExecution();
+		int shortcutkey = 33;
 	protected:
 		/// <summary>
 		/// Clean up any resources being used.
@@ -47,6 +76,11 @@ namespace NotTAS {
 	private:
 		ScriptManager& _sm = ScriptManager::GetInstance();
 		MainLogic& _ml = MainLogic::GetInstance();
+		bool IsRunning = false;
+		bool UIIsUpdating = false;
+		void UpdateCurrentEditingTextBoxes();
+		void AddFunction(ScriptManager::FrameFunction);
+	private: System::Windows::Forms::NumericUpDown^ numUD_ToolFPS;
 	private: System::Windows::Forms::GroupBox^ groupBox_AddMouse;
 	private: System::Windows::Forms::ComboBox^ comboBox_MClick_InputType;
 	private: System::Windows::Forms::Button^ button_MClick_AddInput;
@@ -77,27 +111,12 @@ namespace NotTAS {
 	private: System::Windows::Forms::TextBox^ textBox_AddScript;
 	private: System::Windows::Forms::Button^ button_AddScript;
 	private: System::Windows::Forms::GroupBox^ groupBox_AddWait;
-
 	private: System::Windows::Forms::NumericUpDown^ numUD_AddWait;
 	private: System::Windows::Forms::Button^ button_AddWait;
 	private: System::Windows::Forms::GroupBox^ groupBox_AddMoveCursor;
 	private: System::Windows::Forms::NumericUpDown^ numUD_MoveCursor_Y;
-
 	private: System::Windows::Forms::NumericUpDown^ numUD_MoveCursor_X;
 	private: System::Windows::Forms::Button^ button_AddMoveCursor;
-
-
-
-
-
-	private:
-		bool IsRunning = false;
-	private: System::Windows::Forms::NumericUpDown^ numUD_ToolFPS;
-
-
-		   bool UIIsUpdating = false;
-		   void UpdateCurrentEditingTextBoxes();
-		   void AddFunction(ScriptManager::FrameFunction);
 	private: System::Windows::Forms::Button^ Button_OpenSettings;
 	public: System::Windows::Forms::Button^ Button_StartSystem;
 	private: System::Windows::Forms::CheckBox^ checkBox_StartOnGameDetect;

@@ -20,6 +20,12 @@ public:
 	};
 	static void LoadSettingsFile(const char* filepath, SettingsInfo & info);
 	static void QuickSaveText(const char* filepath,std::string text);
+	/// <summary>
+	/// if file exists, returns true, if not returns false.
+	/// </summary>
+	/// <param name="filepath"></param>
+	/// <param name="text"></param>
+	/// <returns></returns>
 	static bool QuickLoadText(const char* filepath,std::string & text);
 private:
 };
