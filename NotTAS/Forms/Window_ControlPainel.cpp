@@ -150,7 +150,7 @@ System::Void NotTAS::Window_ControlPainel::Button_OpenSettings_Click(System::Obj
 		catch (std::invalid_argument) {
 			std::cout << ">> [Initial Main Window Load] INVALID SHORTCUT, SET TO DEFAULT [PAGEUP] BUTTON" << std::endl;
 		}
-	} 
+	}
 	return System::Void();
 }
 
@@ -163,37 +163,54 @@ System::Void NotTAS::Window_ControlPainel::numeric_StartFromFrame_ValueChanged(S
 
 System::Void NotTAS::Window_ControlPainel::bWorker_DoWork(System::Object^ sender, System::ComponentModel::DoWorkEventArgs^ e)
 {
-	// i really don't understand why, but if this code don't have this line output to the console, nothing works in this loop. Help. -Gordo
-	std::cout << "[bWorker_DoWork-log] Starting..." << std::endl;
 	while (true) {
 		if (bWorker->CancellationPending) {
 			e->Cancel = true;
 			break;
 		}
-		this->Invoke(gcnew  Action(this, &NotTAS::Window_ControlPainel::CheckPlayStopKeyPress));
+		//if form is not yet created, just skip until the form have a handle.
+		if (!IsHandleCreated)
+			continue;
+		this->BeginInvoke(gcnew  Action(this, &NotTAS::Window_ControlPainel::CheckPlayStopKeyPress));
 		if (_ml.IsRunning() || _ml.IsWaitingProcess()) {
-			this->Invoke(gcnew  Action<String^>(this, &NotTAS::Window_ControlPainel::UpdateButtonText), "Stop");
-
+			this->BeginInvoke(gcnew  Action<String^>(this, &NotTAS::Window_ControlPainel::UpdateButtonText), "Stop");
 		}
 		else
 		{
-			this->Invoke(gcnew  Action<String^>(this, &NotTAS::Window_ControlPainel::UpdateButtonText), "Play");
+			this->BeginInvoke(gcnew  Action<String^>(this, &NotTAS::Window_ControlPainel::UpdateButtonText), "Play");
 		}
+
 		System::Threading::Thread::Sleep(100);
+	}
+	return System::Void();
+}
+
+System::Void NotTAS::Window_ControlPainel::bWorker_RunWorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
+{
+	if (e->Error != nullptr)
+	{
+		//if a error happened inside the background worker thread, forms will stop the backgroud thread and store the error inside the RunWorkerCompleteEVentArgs
+		std::cout << ">> [bWorker_DoWork-ERROR] BACKGROUND WORKER CRASH!" << std::endl;
+		std::string error;
+		MarshalString(e->Error->Message, error);
+		std::cout << error << std::endl;
 	}
 	return System::Void();
 }
 
 void NotTAS::Window_ControlPainel::UpdateButtonText(String^ text)
 {
-	Button_StartSystem->Text = text;
+	if (Button_StartSystem->IsHandleCreated)
+		Button_StartSystem->Text = text;
 }
 
 void NotTAS::Window_ControlPainel::CheckPlayStopKeyPress()
 {
-	if (GetKeyState(shortcutkey) & 0x8000)
+	//Is key down?
+	if (GetAsyncKeyState(shortcutkey) & 0x8000 && !IsPressingSwitchPlayButton)
 	{
-		if (!_ml.IsRunning() && !_ml.IsWaitingProcess()) 
+		IsPressingSwitchPlayButton = true;
+		if (!_ml.IsRunning() && !_ml.IsWaitingProcess())
 		{
 			DoStartExecution();
 		}
@@ -202,11 +219,14 @@ void NotTAS::Window_ControlPainel::CheckPlayStopKeyPress()
 			DoStopExecution();
 		}
 	}
-}
-
-System::Void NotTAS::Window_ControlPainel::bWorker_WorkerCompleted(System::Object^ sender, System::ComponentModel::RunWorkerCompletedEventArgs^ e)
-{
-	return System::Void();
+	else if(GetAsyncKeyState(shortcutkey) & 0x8000 && IsPressingSwitchPlayButton) //Is user holding the button?
+	{
+		// Do nothing
+	}
+	else // key is not being pressed, just release
+	{
+		IsPressingSwitchPlayButton = false;
+	}
 }
 
 System::Void NotTAS::Window_ControlPainel::button_AddKeyboardKey_Click(System::Object^ sender, System::EventArgs^ e)
@@ -651,6 +671,7 @@ System::Void NotTAS::Window_ControlPainel::button_AddMoveCursor_Click(System::Ob
 	AddFunction(fFunction);
 	return System::Void();
 }
+
 
 System::Void NotTAS::Window_ControlPainel::textBox_KB_Key_TextChanged(System::Object^ sender, System::EventArgs^ e)
 {
