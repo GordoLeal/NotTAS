@@ -135,6 +135,22 @@ System::Void NotTAS::Window_ControlPainel::Button_OpenSettings_Click(System::Obj
 {
 	Window_Settings^ settings = gcnew Window_Settings;
 	settings->ShowDialog();
+	std::string quickplayshortcut;
+	if (SettingsFileManager::QuickLoadText("QuickPlayShorcut.txt", quickplayshortcut))
+	{
+		std::cout << "[Initial Main Window Load] Loading Quick Play Shortcut" << std::endl;
+		try {
+			int t = std::stoi(quickplayshortcut, nullptr, 16);
+			if (t >= 1 && t <= 254)
+			{
+				//valid
+				shortcutkey = t;
+			}
+		}
+		catch (std::invalid_argument) {
+			std::cout << ">> [Initial Main Window Load] INVALID SHORTCUT, SET TO DEFAULT [PAGEUP] BUTTON" << std::endl;
+		}
+	} 
 	return System::Void();
 }
 
